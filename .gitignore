@@ -1,0 +1,9 @@
+LLMSimulator/build/
+LLMSimulator/log/
+LLMSimulator/scratch/
+LLMSimulator/reproduction_A100/results/build/
+LLMSimulator/test.log
+LLMSimulator/check_md5.txt
+LLMSimulator/sim_queue.py
+LLMSimulator/reproduction/
+LLMSimulator/.git_backup/

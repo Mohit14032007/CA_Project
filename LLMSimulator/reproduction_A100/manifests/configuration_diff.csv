@@ -1,0 +1,14 @@
+parameter,a100_gpu_baseline,a100_duplex,a100_duplex_pe,a100_duplex_pe_et,category,expected_difference,source
+processor_type,GPU,GPU+LOGIC,GPU+LOGIC,GPU+LOGIC,processor,processor type change,yaml
+parallel_execution,off,off,on,on,optimization,PE enabling,yaml
+expert_tensor_degree,1,1,1,4,parallelism,ET enabling,yaml
+model_name,mixtral,mixtral,mixtral,mixtral,model,identical,yaml
+gpu_gen,A100,A100,A100,A100,hardware,identical,yaml
+num_node,1,1,1,1,hardware,identical,yaml
+num_device,4,4,4,4,hardware,identical,yaml
+none_expert_tensor_degree,4,4,4,4,parallelism,identical,yaml
+max_batch_size,32,32,32,32,workload,identical,yaml
+input_len,2048,2048,2048,2048,workload,identical,yaml
+output_len,128,128,128,128,workload,identical,yaml
+iter,5,5,5,5,workload,identical,yaml
+decode_mode,on,on,on,on,workload,identical,yaml

@@ -1,0 +1,6 @@
+eacc26bb8a1f9bfe04b0b4457cf3a5d8  src/hardware/cluster.cpp
+7179a272be841d6a0085f21b1879b82c  reproduction_A100/configs/a100_duplex.yaml
+b1bd9ed4043fcee44dc0826ce94dc4b7  reproduction_A100/configs/a100_duplex_pe.yaml
+7f75fd653544b68c82d1f4aa52a92400  reproduction_A100/configs/a100_duplex_pe_et.yaml
+2045da1df1c9c4e50c3fbdb9a7455cda  reproduction_A100/configs/a100_gpu_baseline.yaml
+git_commit: 419252761fbdb95b789778a02256d458a5537ec7

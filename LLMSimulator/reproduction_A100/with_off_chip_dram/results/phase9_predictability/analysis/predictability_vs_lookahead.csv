@@ -1,0 +1,3 @@
+predictor,lookahead,topk_recall
+Previous Token,1,0.25
+Previous Token,2,0.24560546875

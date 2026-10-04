@@ -1,0 +1,5 @@
+configuration,configured_iterations,executed_iterations,routing_iterations,performance_rows,match,status
+a100_gpu_baseline,3,3,3,3,True,PASS
+a100_duplex,3,3,3,3,True,PASS
+a100_duplex_pe,3,3,3,3,True,PASS
+a100_duplex_pe_et,3,3,3,3,True,PASS

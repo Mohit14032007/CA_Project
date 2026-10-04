@@ -1,0 +1,2 @@
+config,actual,expected,valid_layers,valid_experts,valid_topk,exact_two,identical_to_a3
+a100_duplex,10240,10240,True,True,True,True,True

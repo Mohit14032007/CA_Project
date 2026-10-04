@@ -1,0 +1,6 @@
+Metric,A4 (Plain Duplex),A5 (Duplex + PE)
+Total Measured Latency (ns),27660707.242374,27660707.242374
+Traced Iteration Latency (ns),5562740.0,5562740.0
+Communication Duration (ns),9121656.0,9121656.0
+GPU Attributed Time (ns),82331608.1828,82331608.1828
+Logic Attributed Time (ns),13536615.4892,13536615.4892

@@ -1,0 +1,5 @@
+Configuration,Routing Record Count,Checksum Status,Identical to A3
+A3,10240,HashMatched,True
+A4,10240,HashMatched,True
+A5,10240,HashMatched,True
+A6,10240,HashMatched,True

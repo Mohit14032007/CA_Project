@@ -1,0 +1,4 @@
+Ablation,Baseline,Modified,Runtime Before,Runtime After,Speedup,Latency Change (%),Communication Change (ns),Architectural Observation
+Duplex (A3->A4),A3,A4,69792152.231487,27660707.242374,2.523151401008684,-60.36702357217927,3739758.4000000004,Shifted Attention generation to Logic-PIM
+PE (A4->A5),A4,A5,27660707.242374,27660707.242374,1.0,0.0,0.0,Allowed GPU/Logic concurrent scheduling
+ET (A5->A6),A5,A6,27660707.242374,27288411.376557,1.013643002543447,-1.3459376239182763,-1202982.0,Tensor-parallel expert execution across 4 devices

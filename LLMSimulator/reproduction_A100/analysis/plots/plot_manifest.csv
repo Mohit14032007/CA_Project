@@ -1,0 +1,32 @@
+Figure ID,Title,Source CSV,Source Columns,Transformation,Interpretation
+fig01_total_runtime.png,Total Measured Runtime,a7_master_performance.csv,Total Measured Latency (ns),None,A4/A5/A6 show massive reduction vs A3
+fig02_traced_iteration_latency.png,Traced Iteration Latency,a7_master_performance.csv,Traced Iteration Latency (ns),None,Matches measured latency trends
+fig03_speedup_vs_a3.png,Speedup vs A3,a7_master_performance.csv,Derived Speedup vs A3,None,~2.52x jump from A3 to A4
+fig04_latency_reduction_vs_a3.png,Latency Reduction vs A3,a7_master_performance.csv,Derived Latency Change vs A3 (%),None,Negative values indicate latency reduction
+fig05_ablation_speedup.png,Ablation Speedup,a7_master_performance.csv,Derived Speedup vs Prev,None,"Duplex gives main speedup, ET provides slight bump"
+fig06_gpu_logic_breakdown.png,GPU vs Logic Time,a7_master_performance.csv,"GPU Attributed Time (ns), Logic Attributed Time (ns)",None,Logic-PIM usage starts in A4
+fig07_processor_share.png,Processor Share,a7_master_performance.csv,"GPU Attributed Time (ns), Logic Attributed Time (ns)",None,Logic takes ~10-14% of attributed time post-A3
+fig08_processor_operation_duration.png,Processor Operation Duration,a7_operation_breakdown.csv,Total Duration,None,Displays dominating operations
+fig09_major_operation_comparison.png,Major Operation Comparison,a7_operation_breakdown.csv,Total Duration,None,Comparison of highest-impact ops
+fig10_operation_processor_mapping.png,Operation Processor Mapping,a7_operation_breakdown.csv,"Processor, Operation",None,Shows offloading to Logic
+fig11_moe_time.png,MoE Attributed Time,a7_master_performance.csv,MoE Time (ns),None,MoE time changes slightly with ET
+fig12_expert_execution_time.png,Expert Execution Time,a7_expert_breakdown.csv,Total Duration,None,Expert time distribution
+fig13_expert_execution_distribution.png,Expert Execution Distribution,a7_expert_breakdown.csv,Average Duration,None,Variance in expert durations
+fig14_expert_device_mapping.png,Expert Device Mapping,a7_expert_breakdown.csv,Devices Used,None,A6 maps every expert to all devices
+fig15_et_all_reduce_duration.png,ET All-Reduce Duration,a7_master_performance.csv,ET All-Reduce Time (ns),None,Only A6 has >0 ET time
+fig16_et_device_distribution.png,A6 ET Time per Device,a7_device_load.csv,ET Time,None,ET time is distributed evenly
+fig17_moe_device_distribution.png,MoE Device Distribution,a7_device_load.csv,MoE Time,None,A6 perfectly balances MoE time
+fig18_total_communication.png,Total Communication Duration,a7_master_performance.csv,Communication Duration (ns),None,Comm time decreases in A6
+fig19_communication_fraction.png,Communication Fraction,a7_master_performance.csv,Communication Fraction,None,Comm fraction drops in A6
+fig20_communication_operation_breakdown.png,Comm Operation Breakdown,a7_communication_breakdown.csv,Total Duration,None,Stacked operations
+fig21_a5_vs_a6_communication.png,A5 vs A6 Communication,a7_communication_breakdown.csv,Total Duration,None,Shows moe_all_reduce_for_e_tp addition and others reduction
+fig22_device_total_time.png,Device Total Time,a7_device_load.csv,Total Attributed Time,None,Device loading
+fig23_device_gpu_time.png,Device GPU Time,a7_device_load.csv,GPU Time,None,GPU time per device
+fig24_device_logic_time.png,Device Logic Time,a7_device_load.csv,Logic Time,None,Logic time per device
+fig25_device_moe_time.png,Device MoE Time,a7_device_load.csv,MoE Time,None,MoE time per device
+fig26_device_communication_time.png,Device Comm Time,a7_device_load.csv,Comm Time,None,Comm time per device
+fig27_a6_et_time_per_device.png,A6 ET Time,a7_device_load.csv,ET Time,None,Even distribution
+fig28_device_balance_cv.png,Device Balance CV,a7_device_load.csv,Total Attributed Time,None,Lower CV means better balance
+fig29_routing_record_count.png,Routing Record Count,a7_routing_consistency.csv,Routing Record Count,None,All 10240 exactly
+fig30_expert_routing_frequency.png,Expert Routing Frequency,a7_routing_consistency.csv,Checksum Status,None,Demonstrates consistency
+fig33_architectural_ablation_summary.png,Architectural Ablation Summary,a7_master_performance.csv,Total Measured Latency (ns),None,Main visual for experiment progression

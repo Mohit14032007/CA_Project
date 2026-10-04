@@ -1,0 +1,33 @@
+repository_commit: 419252761fbdb95b789778a02256d458a5537ec7
+model: mixtral
+hardware: A100
+device_count: 4
+node_count: 1
+precision: 2
+DP: 1
+TP: 4
+input_len: 2048
+output_len: 128
+batch_size: 32
+warmup_iterations: 10000
+measured_iterations: 5
+decode_mode: on
+prefill_mode: off
+
+experiments:
+  a100_gpu_baseline:
+    config: reproduction_A100/configs/a100_gpu_baseline.yaml
+    PE: off
+    ET: 1
+  a100_duplex:
+    config: reproduction_A100/configs/a100_duplex.yaml
+    PE: off
+    ET: 1
+  a100_duplex_pe:
+    config: reproduction_A100/configs/a100_duplex_pe.yaml
+    PE: on
+    ET: 1
+  a100_duplex_pe_et:
+    config: reproduction_A100/configs/a100_duplex_pe_et.yaml
+    PE: on
+    ET: 4

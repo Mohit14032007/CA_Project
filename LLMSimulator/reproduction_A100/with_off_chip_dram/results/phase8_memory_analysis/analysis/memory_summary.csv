@@ -1,0 +1,9 @@
+Metric,Value,Unit
+Total Expert Size,352321536,bytes
+Total 256 Expert Footprint,90.194313216,GB
+Tensor Miss Events,248,events
+Tensor Hit Events,3592,events
+Expert Miss Events,248,events
+Mean Expert Load Time,981447.0,ns
+Mean Expert Compute Time,137054.36328125,ns
+Ratio Load/Compute,7.16100514060955,x

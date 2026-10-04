@@ -1,0 +1,3 @@
+processor,operation_count,total_duration,percentage_duration
+GPU,6656,82331608.1828,85.87997673190057
+Logic,1280,13536615.4892,14.120023268099423
