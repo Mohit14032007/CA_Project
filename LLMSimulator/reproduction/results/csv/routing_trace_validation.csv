@@ -1,0 +1,5 @@
+Configuration,Total_Rows,Unique_Requests,Min_Token_ID,Max_Token_ID,Unique_Layers,Unique_Experts,Top1_Records,Top2_Records
+gpu_baseline,10240,32,2142,2146,32,8,5120,5120
+duplex,10240,32,2142,2146,32,8,5120,5120
+duplex_pe,10240,32,2142,2146,32,8,5120,5120
+duplex_pe_et,10240,32,2142,2146,32,8,5120,5120

@@ -1,0 +1,5 @@
+configuration,total_time_ms,latency_ms,throughput_tokens_s,speedup_vs_gpu,moe_time_ms,attention_time_ms,communication_ms,gpu_time_ms,logic_pim_time_ms,energy_mJ
+gpu_baseline,32.09,6.42,4985.79,1.0,6.77,0.69,0.34,153.86,0.0,3136.88
+duplex,11.57,2.31,13827.12,2.77,2.14,0.17,0.34,44.47,8.23,3340.54
+duplex_pe,11.57,2.31,13827.12,2.77,2.14,0.17,0.34,44.47,8.23,3340.54
+duplex_pe_et,10.47,2.09,15281.3,3.06,1.71,0.17,0.5,52.84,6.49,3305.61
