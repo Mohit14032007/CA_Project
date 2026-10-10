@@ -1,0 +1,9 @@
+[Prefill Mode] Output Length is modified into 1
+Using synthesis trace
+ACT: 0.000801563GB, Weight: 156.775GB, Cache: 0.00305176GB
+Total: 156.779GB
+-----------------------------------
+-------------start-----------------
+-----------------------------------
+Total: 791333527.860799
+reproduction_A100/with_off_chip_dram/deepseekv3/results/ds5b1_mapping/debugV3_synthesis_4_1_GPU_N1_D1_TP1_DP1_maxbatch1_maxprocess128_iter1_skew8_precision_byte2_parallel_execution0_ramul_prefill.csv

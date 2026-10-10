@@ -422,6 +422,10 @@ void Cluster::exportToCSV(std::ofstream &csv, std::vector<Stat> &stat_list) {
 }
 
 std::vector<Stat> Cluster::runIteration(int iter, std::string file_name) {
+  for (int device_rank = 0; device_rank < num_total_device; device_rank++) {
+    get_device(device_rank)->reset_expert_cache();
+  }
+
   std::ofstream csv;
   csv.open(file_name);
 

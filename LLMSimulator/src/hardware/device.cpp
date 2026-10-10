@@ -63,8 +63,14 @@ Device::Device(SystemConfig config, int device_total_rank, Cluster_ptr cluster)
   if (offchip_cfg.empty()) {
       offchip_cfg = dram_cfg_path; // fallback to HBM placeholder if not provided
   }
-  offchip_dram_interface = DRAMInterface::Create(offchip_cfg, memory_scale_factor);
-  offchip_mmap_controller = MMapController::Create(memory_config);
+  double offchip_scale_factor = memory_scale_factor;
+  MemoryConfig offchip_memory_config = memory_config;
+  if (offchip_cfg.find("DDR5") != std::string::npos) {
+      offchip_scale_factor = 0.625;
+      offchip_memory_config = ddr5_32gb_x16_2ch;
+  }
+  offchip_dram_interface = DRAMInterface::Create(offchip_cfg, offchip_scale_factor);
+  offchip_mmap_controller = MMapController::Create(offchip_memory_config);
 
   // Phase 4 Validation Only: Synthetic test request to Ramulator B (Disabled for production)
   /*
@@ -109,7 +115,11 @@ void Device::add_module(std::string name, Module_ptr module) {
 }
 
 void Device::setMemoryObject(Tensor::Ptr tensor) {
-  mmap_controller->setMemoryObject(tensor);
+  if (tensor->weight_target == MemoryTarget::OFFCHIP_DRAM && offchip_mmap_controller != nullptr) {
+    offchip_mmap_controller->setMemoryObject(tensor);
+  } else {
+    mmap_controller->setMemoryObject(tensor);
+  }
 }
 
 void Device::addExecutionCache(ExecStatus& exec_status, CacheKey key) {
@@ -246,6 +256,69 @@ void Device::initializeDRAM(int ProcessorType, DramEnergy dramEnergy) {
   dramEnergy.kALL_WRITE_energy_j_ *= num_pseudo_ch;
 
   top_module_graph->initializeDRAM(ProcessorType, dramEnergy);
+}
+
+bool Device::is_expert_resident(int layer_id, int expert_id) {
+  static bool init = false;
+  static std::ofstream csv;
+  if (!init) {
+    const char* trace_dir_env = std::getenv("TRACE_DIR");
+    std::string path = "expert_cache.csv";
+    if (trace_dir_env) path = std::string(trace_dir_env) + "/expert_cache.csv";
+    csv.open(path, std::ios::app);
+    csv.seekp(0, std::ios::end);
+    if (csv.tellp() == 0) {
+      csv << "layer_id,expert_id,action,resident_bytes\n";
+    }
+    init = true;
+  }
+
+  auto it = resident_experts.find({layer_id, expert_id});
+  if (it != resident_experts.end()) {
+    // Cache HIT: Move to MRU position (back of the list)
+    lru_expert_list.erase(it->second);
+    lru_expert_list.push_back({layer_id, expert_id});
+    it->second = std::prev(lru_expert_list.end());
+    csv << layer_id << "," << expert_id << ",HIT," << resident_bytes << "\n";
+    csv.flush();
+    return true;
+  }
+  csv << layer_id << "," << expert_id << ",MISS," << resident_bytes << "\n";
+  csv.flush();
+  return false;
+}
+
+void Device::mark_expert_resident(int layer_id, int expert_id, long long expert_size) {
+  // If it's already resident, we just return (is_expert_resident already moves to MRU)
+  if (resident_experts.find({layer_id, expert_id}) != resident_experts.end()) {
+    return;
+  }
+
+  static std::ofstream csv;
+  static bool init = false;
+  if (!init) {
+    const char* trace_dir_env = std::getenv("TRACE_DIR");
+    std::string path = "expert_cache.csv";
+    if (trace_dir_env) path = std::string(trace_dir_env) + "/expert_cache.csv";
+    csv.open(path, std::ios::app);
+    init = true;
+  }
+
+  // Cache MISS: Evict LRU experts until there is enough capacity
+  while (resident_bytes + expert_size > cache_capacity_bytes && !lru_expert_list.empty()) {
+    auto lru_expert = lru_expert_list.front();
+    lru_expert_list.pop_front();
+    resident_experts.erase(lru_expert);
+    resident_bytes -= expert_size; 
+    csv << lru_expert.first << "," << lru_expert.second << ",EVICT," << resident_bytes << "\n";
+  }
+
+  // Insert the new expert at MRU position
+  lru_expert_list.push_back({layer_id, expert_id});
+  resident_experts[{layer_id, expert_id}] = std::prev(lru_expert_list.end());
+  resident_bytes += expert_size;
+  csv << layer_id << "," << expert_id << ",INSERT," << resident_bytes << "\n";
+  csv.flush();
 }
 
 };  // namespace llm_system

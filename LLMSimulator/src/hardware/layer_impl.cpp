@@ -13,16 +13,28 @@ ExecStatus issueRamulator(Device_Ptr device, LayerType layer_type,
   CacheKey key = std::make_tuple(layer_type, processor_type, dram_request_type,
                                  tensor->getSize(), target);
   ExecStatus exec_status;
-  if (!device->checkExecutionCache(exec_status, key)) {
+  bool bypass_cache = (target == MemoryTarget::OFFCHIP_DRAM);
+
+  if (bypass_cache || !device->checkExecutionCache(exec_status, key)) {
     DRAMRequest::Ptr dram_request = DRAMRequest::Create(dram_request_type);
-    dram_request->AddOperand(tensor->getMemoryObject(), pim_operand_type);
+    if (target == MemoryTarget::OFFCHIP_DRAM && device->offchip_mmap_controller) {
+      auto offchip_mem_obj = MemoryObject::Create(
+          tensor->getMMap(), tensor->getMemoryObject()->getLogicAddr(),
+          tensor->getSize(), device->offchip_mmap_controller);
+      dram_request->AddOperand(offchip_mem_obj, pim_operand_type);
+    } else {
+      dram_request->AddOperand(tensor->getMemoryObject(), pim_operand_type);
+    }
     device->run_ramulator(dram_request, target);
     if (target == MemoryTarget::OFFCHIP_DRAM && device->offchip_dram_interface) {
       exec_status = device->offchip_dram_interface->getExecStatus(); 
     } else {
       exec_status = device->dram_interface->getExecStatus(); 
     }
-    device->addExecutionCache(exec_status, key);
+    
+    if (!bypass_cache) {
+        device->addExecutionCache(exec_status, key);
+    }
   }
 
   return exec_status;

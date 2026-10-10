@@ -71,7 +71,7 @@ Here is the original call chain for an expert weight access:
    - Requests a memory read for the input.
    - Requests a memory read for the weight tensor.
    - Requests a memory write for the output tensor.
-4. **`issueRamulator()`** (in `src/hardware/layer_impl.cpp`):
+4. **`issueRamulat  or()`** (in `src/hardware/layer_impl.cpp`):
    - Takes the tensor, creates a `DRAMRequest`.
    - Calls `device->run_ramulator(dram_request)`.
 5. **`Device::run_ramulator()`** (in `src/hardware/device.cpp`):

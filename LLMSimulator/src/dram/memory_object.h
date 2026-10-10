@@ -38,6 +38,7 @@ class MemoryObject {
   long getBundleSize() { return num_bundle; }
 
   void setSize(long long _size);
+  addr getLogicAddr() { return address; }
 
  private:
   MMap mmap;

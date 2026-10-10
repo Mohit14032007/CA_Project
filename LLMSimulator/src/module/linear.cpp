@@ -52,7 +52,12 @@ Tensor::Ptr Linear::forward(const Tensor::Ptr input,
       if (!device->is_expert_resident(layer_id, A->expert_id)) {
         A->weight_target = MemoryTarget::OFFCHIP_DRAM;
         A->load_sisters = true;
-        device->mark_expert_resident(layer_id, A->expert_id);
+        
+        long long total_expert_size = A->getSize();
+        for (auto sister : A->sister_weights) {
+            total_expert_size += sister->getSize();
+        }
+        device->mark_expert_resident(layer_id, A->expert_id, total_expert_size);
       }
     }
   }

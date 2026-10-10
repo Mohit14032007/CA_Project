@@ -350,7 +350,7 @@ TensorVec MoEGather::forward(const TensorVec input_vec,
   inter_node_comm_size /= device->model_config.ne_tp_dg; // receive only (1 / tp_degree) tokens, and then all reduce
 
   // FP8 dispatch && BF16 combine
-  if((device->model_config.model_name == "deepseekV3") && device->model_config.precision_byte == 1){
+  if(((device->model_config.model_name == "deepseekV3") || (device->model_config.model_name == "debugV3")) && device->model_config.precision_byte == 1){
     intra_node_comm_size *= 2;
     inter_node_comm_size *= 2;
   }

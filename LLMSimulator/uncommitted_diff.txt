@@ -1,0 +1,661 @@
+diff --git a/eval/test.cpp b/eval/test.cpp
+index c78b6e6..d619f9e 100644
+--- a/eval/test.cpp
++++ b/eval/test.cpp
+@@ -37,6 +37,19 @@ int main(int argc, char *argv[]) {
+ 
+   int max_process_token = config["serving"]["max_process_token"].as<int>();
+   std::string output_path = config["log"]["output_directory"].as<std::string>();
++  std::filesystem::create_directories(output_path);
++
++  // Extract config name from gantt_file_path to set TRACE_DIR early
++  std::string gantt_dir_temp = config["log"]["gantt_directory"].as<std::string>();
++  std::string trace_dir = gantt_dir_temp;
++  size_t raw_pos = trace_dir.find("/raw/");
++  if(raw_pos != std::string::npos) {
++    trace_dir.replace(raw_pos, 5, "/traces/");
++  } else {
++    trace_dir = "reproduction_A100/results/traces/default/";
++  }
++  std::filesystem::create_directories(trace_dir);
++  setenv("TRACE_DIR", trace_dir.c_str(), 1);
+ 
+   SystemConfig system_config;
+   if(config["system"]["gpu_gen"].as<std::string>() == "A100"){
+@@ -63,6 +76,9 @@ int main(int argc, char *argv[]) {
+   else if(config["system"]["nvlink_gen"].as<int>() == 5){
+     system_config.device_ict_bandwidth = 900.0 * 1000 * 1000 * 1000; // B/s NVLink 5th Gen (B100, B200)
+     system_config.device_ict_latency = 0.8 * 1000; // ns
++  } else if(config["system"]["nvlink_gen"].as<int>() == 3){
++    system_config.device_ict_bandwidth = 150.0 * 1000 * 1000 * 1000; // B/s NVLink 3rd Gen (A100)
++    system_config.device_ict_latency = 3.0 * 1000; // ns
+   }else{
+     fail("Not support NVLink generation");
+   }
+@@ -106,6 +122,10 @@ int main(int argc, char *argv[]) {
+       config["system"]["optimization"]["use_low_unit_moe_only"].as<bool>();      
+   system_config.use_ramulator =
+       config["system"]["optimization"]["use_ramulator"].as<bool>();
++  
++  if (config["system"]["optimization"]["offchip_dram_cfg_path"]) {
++      system_config.offchip_dram_cfg_path = config["system"]["optimization"]["offchip_dram_cfg_path"].as<std::string>();
++  }
+ 
+   system_config.use_flash_mla =
+       config["system"]["optimization"]["use_flash_mla"].as<bool>();
+diff --git a/src/dram/ramulator2 b/src/dram/ramulator2
+--- a/src/dram/ramulator2
++++ b/src/dram/ramulator2
+@@ -1 +1 @@
+-Subproject commit b5262869b24790e5ec62d9d9974fca9bbb4f54e0
++Subproject commit b5262869b24790e5ec62d9d9974fca9bbb4f54e0-dirty
+diff --git a/src/hardware/base.h b/src/hardware/base.h
+index 1090479..7baa7d4 100644
+--- a/src/hardware/base.h
++++ b/src/hardware/base.h
+@@ -63,6 +63,8 @@ using DRAMInterface_Ptr = std::shared_ptr<DRAMInterface>;
+ using MMapController_Ptr = std::shared_ptr<MMapController>;
+ using Device_Ptr = std::shared_ptr<Device>;
+ 
+-using CacheKey = std::tuple<LayerType, ProcessorType, DRAMRequestType, long>;
++enum class MemoryTarget { HBM, OFFCHIP_DRAM };
++
++using CacheKey = std::tuple<LayerType, ProcessorType, DRAMRequestType, long, MemoryTarget>;
+ 
+ }  // namespace llm_system
+\ No newline at end of file
+diff --git a/src/hardware/cluster.cpp b/src/hardware/cluster.cpp
+index 333f67b..0fa7138 100644
+--- a/src/hardware/cluster.cpp
++++ b/src/hardware/cluster.cpp
+@@ -466,12 +466,7 @@ std::vector<Stat> Cluster::runIterationMixed(int iter, std::ofstream &csv) {
+ 
+   for (int i = 0; i < iter; i++) {
+     // export to csv, you can modify the frequency of export_to_csv by changing the number. now it is 1
+-    if (i % 1 == 0) {
+-      auto duration = std::chrono::duration_cast<std::chrono::seconds>(
+-          std::chrono::high_resolution_clock::now() - start);
+-      start = std::chrono::high_resolution_clock::now();
+-      exportToCSV(csv, stat_list);
+-    }
++    // (Moved to end of loop to ensure all iterations are exported)
+ 
+     auto metadata = scheduler->setMetadata();
+     run(metadata);
+@@ -519,6 +514,18 @@ std::vector<Stat> Cluster::runIterationMixed(int iter, std::ofstream &csv) {
+ 
+     scheduler->fillSequenceQueue(time, total_time);
+     scheduler->fillRunningQueue();
++    
++    if (i % 1 == 0) {
++      auto duration = std::chrono::duration_cast<std::chrono::seconds>(
++          std::chrono::high_resolution_clock::now() - start);
++      start = std::chrono::high_resolution_clock::now();
++      exportToCSV(csv, stat_list);
++    }
++  }
++
++  // Ensure any remaining stats are exported if not caught by the modulo
++  if (!stat_list.empty()) {
++    exportToCSV(csv, stat_list);
+   }
+ 
+   return stat_list;
+@@ -538,12 +545,7 @@ std::vector<Stat> Cluster::runIterationSumGenSplit(int iter,
+ 
+   for (int i = 0; i < iter; i++) {
+     // export to csv
+-    if (i % 25 == 24) {
+-      auto duration = std::chrono::duration_cast<std::chrono::seconds>(
+-          std::chrono::high_resolution_clock::now() - start);
+-      start = std::chrono::high_resolution_clock::now();
+-      exportToCSV(csv, stat_list);
+-    }
++    // (Moved to end of loop to ensure all iterations are exported)
+ 
+     auto metadata = scheduler->setMetadata();
+     run(metadata);
+@@ -601,6 +603,17 @@ std::vector<Stat> Cluster::runIterationSumGenSplit(int iter,
+       token_list = scheduler->updateSchedulerSumGenSplit(time);
+       addLatency(stat_list, token_list, stat.time);
+     }
++
++    if (i % 25 == 24) {
++      auto duration = std::chrono::duration_cast<std::chrono::seconds>(
++          std::chrono::high_resolution_clock::now() - start);
++      start = std::chrono::high_resolution_clock::now();
++      exportToCSV(csv, stat_list);
++    }
++  }
++
++  if (!stat_list.empty()) {
++    exportToCSV(csv, stat_list);
+   }
+ 
+   return stat_list;
+diff --git a/src/hardware/device.cpp b/src/hardware/device.cpp
+index d267e51..22669ed 100644
+--- a/src/hardware/device.cpp
++++ b/src/hardware/device.cpp
+@@ -31,7 +31,7 @@ Device::Device(SystemConfig config, int device_total_rank, Cluster_ptr cluster)
+   top_module_graph = TopModuleGraph::Create(status);
+ 
+   std::string dram_cfg_path;
+-  if(config.gpu_gen == "H100"){
++  if(config.gpu_gen == "H100" || config.gpu_gen == "A100"){
+     dram_cfg_path = "./dram_config_HBM3_80GB.yaml";
+   }
+   else if(config.gpu_gen == "B100" || config.gpu_gen == "B200"){
+@@ -41,7 +41,7 @@ Device::Device(SystemConfig config, int device_total_rank, Cluster_ptr cluster)
+ 
+   double memory_scale_factor = 0;
+   MemoryConfig memory_config = MemoryConfig(config.num_cube, config.num_logic_cube);
+-  if(config.gpu_gen == "H100"){
++  if(config.gpu_gen == "H100" || config.gpu_gen == "A100"){
+     // H100, HBM3 80GB, 5.2Gbps
+     memory_scale_factor = 0.76923;
+     memory_config = hbm3_80GB;
+@@ -58,6 +58,28 @@ Device::Device(SystemConfig config, int device_total_rank, Cluster_ptr cluster)
+ 
+   dram_interface = DRAMInterface::Create(dram_cfg_path, memory_scale_factor);
+   mmap_controller = MMapController::Create(memory_config);
++  // Phase 4: Instantiate second memory tier for off-chip DRAM.
++  std::string offchip_cfg = config.offchip_dram_cfg_path;
++  if (offchip_cfg.empty()) {
++      offchip_cfg = dram_cfg_path; // fallback to HBM placeholder if not provided
++  }
++  offchip_dram_interface = DRAMInterface::Create(offchip_cfg, memory_scale_factor);
++  offchip_mmap_controller = MMapController::Create(memory_config);
++
++  // Phase 4 Validation Only: Synthetic test request to Ramulator B (Disabled for production)
++  /*
++  std::cout << "[PHASE 4 VALIDATION] Submitting synthetic read to Off-chip DRAM (Ramulator B)..." << std::endl;
++  auto mem_obj = MemoryObject::Create(MMap::ALL_CHANNEL, 0, 64, offchip_mmap_controller);
++  auto req = DRAMRequest::Create(DRAMRequestType::kRead);
++  req->AddOperand(mem_obj, PIMOperandType::kDRAM);
++  std::list<DRAMRequest::Ptr> req_list;
++  req_list.push_back(req);
++  offchip_dram_interface->HandleRequest(req_list, 0);
++  std::cout << "[PHASE 4 VALIDATION] Synthetic request completed." << std::endl;
++  std::cout << "[PHASE 4 VALIDATION] Off-chip Memory duration: " 
++            << offchip_dram_interface->getExecStatus().memory_duration << " ns" << std::endl;
++  */
++
+   use_ramulator = config.use_ramulator;
+   perform_execution = false;
+ }
+@@ -97,9 +119,9 @@ void Device::addExecutionCache(ExecStatus& exec_status, CacheKey key) {
+ 
+ void Device::addExecutionCache(ExecStatus& exec_status, LayerType layer_type,
+                                ProcessorType processor_type,
+-                               DRAMRequestType dram_reqeust_type, long size) {
++                               DRAMRequestType dram_reqeust_type, long size, MemoryTarget target) {
+   CacheKey key =
+-      std::make_tuple(layer_type, processor_type, dram_reqeust_type, size);
++      std::make_tuple(layer_type, processor_type, dram_reqeust_type, size, target);
+   auto& cache = cluster->execution_time_cache;
+   cache.emplace(key, exec_status);
+ }
+@@ -170,10 +192,14 @@ void Device::execution_ramulator(LayerType layer_type,
+   std::cout << weight->name << std::endl;
+ }
+ 
+-void Device::run_ramulator(DRAMRequest_Ptr dram_request) {
++void Device::run_ramulator(DRAMRequest_Ptr dram_request, MemoryTarget target) {
+   std::list<DRAMRequest::Ptr> request;
+   request.push_back(dram_request);
+-  dram_interface->HandleRequest(request, 0);
++  if (target == MemoryTarget::OFFCHIP_DRAM && offchip_dram_interface != nullptr) {
++    offchip_dram_interface->HandleRequest(request, 0);
++  } else {
++    dram_interface->HandleRequest(request, 0);
++  }
+ }
+ 
+ void Device::run_ideal(DRAMRequestType dram_request_type, Tensor_Ptr tensor){
+diff --git a/src/hardware/device.h b/src/hardware/device.h
+index 14dd2a1..5d2c700 100644
+--- a/src/hardware/device.h
++++ b/src/hardware/device.h
+@@ -1,6 +1,7 @@
+ #pragma once
+ #include <map>
+ #include <memory>
++#include <set>
+ 
+ #include "common/type.h"
+ #include "dram/dram_type.h"
+@@ -77,14 +78,14 @@ class Device : public std::enable_shared_from_this<Device> {
+   // allocate DataObject;
+   void setMemoryObject(Tensor_Ptr tensor);
+ 
+-  void run_ramulator(DRAMRequest_Ptr dram_request);
++  void run_ramulator(DRAMRequest_Ptr dram_request, MemoryTarget target = MemoryTarget::HBM);
+   void run_ideal(DRAMRequestType dram_request_type, Tensor_Ptr tensor);
+ 
+   void addExecutionCache(ExecStatus& exec_status, CacheKey key);
+ 
+   void addExecutionCache(ExecStatus& exec_status, LayerType layer_type,
+                          ProcessorType processor_type,
+-                         DRAMRequestType dram_reqeust_type, long size);
++                         DRAMRequestType dram_reqeust_type, long size, MemoryTarget target = MemoryTarget::HBM);
+ 
+   bool checkExecutionCache(ExecStatus& exec_status, CacheKey key);
+   bool checkExecutionCache(CacheKey key);
+@@ -100,11 +101,22 @@ class Device : public std::enable_shared_from_this<Device> {
+ 
+   Cluster_ptr cluster;
+   DRAMInterface_Ptr dram_interface;
++  DRAMInterface_Ptr offchip_dram_interface;
+ 
+   StatusBoard status;
+   ModelConfig model_config;
+ 
+   MMapController_Ptr mmap_controller;
++  MMapController_Ptr offchip_mmap_controller;
++
++  // Phase 5 Expert Residency Tracker
++  std::set<std::pair<int, int>> resident_experts;
++  bool is_expert_resident(int layer_id, int expert_id) {
++    return resident_experts.find({layer_id, expert_id}) != resident_experts.end();
++  }
++  void mark_expert_resident(int layer_id, int expert_id) {
++    resident_experts.insert({layer_id, expert_id});
++  }
+ 
+   bool perform_execution;
+ 
+diff --git a/src/hardware/hardware_config.h b/src/hardware/hardware_config.h
+index 2b1885b..14f0d08 100644
+--- a/src/hardware/hardware_config.h
++++ b/src/hardware/hardware_config.h
+@@ -50,7 +50,8 @@ class SystemConfig {
+                  bool use_inject_rate = false,
+                  int request_per_second = 10,
+                  int num_cube = 5,
+-                 int num_logic_cube = 5
++                 int num_logic_cube = 5,
++                 std::string offchip_dram_cfg_path = ""
+                 )
+       : gpu_gen(gpu_gen),
+         num_node(num_node),
+@@ -86,7 +87,8 @@ class SystemConfig {
+         use_inject_rate(use_inject_rate),
+         request_per_second(request_per_second),
+         num_cube(num_cube),
+-        num_logic_cube(num_logic_cube){
++        num_logic_cube(num_logic_cube),
++        offchip_dram_cfg_path(offchip_dram_cfg_path){
+           logic_memory_bandwidth = memory_bandwidth * logic_x;
+           pim_memory_bandwidth = memory_bandwidth * pim_x;
+         };
+@@ -135,6 +137,7 @@ class SystemConfig {
+   bool disagg_system = true;
+   bool use_low_unit_moe_only = false;
+   bool use_ramulator = false;
++  std::string offchip_dram_cfg_path = "";
+   
+   bool exit_out_of_memory = false;
+   bool mem_cap_limit = false;
+diff --git a/src/hardware/layer_impl.cpp b/src/hardware/layer_impl.cpp
+index 2cafbc1..55a8c15 100644
+--- a/src/hardware/layer_impl.cpp
++++ b/src/hardware/layer_impl.cpp
+@@ -9,15 +9,19 @@ namespace llm_system {
+ ExecStatus issueRamulator(Device_Ptr device, LayerType layer_type,
+                           ProcessorType processor_type,
+                           DRAMRequestType dram_request_type,
+-                          PIMOperandType pim_operand_type, Tensor_Ptr tensor) {
++                          PIMOperandType pim_operand_type, Tensor_Ptr tensor, MemoryTarget target) {
+   CacheKey key = std::make_tuple(layer_type, processor_type, dram_request_type,
+-                                 tensor->getSize());
++                                 tensor->getSize(), target);
+   ExecStatus exec_status;
+   if (!device->checkExecutionCache(exec_status, key)) {
+     DRAMRequest::Ptr dram_request = DRAMRequest::Create(dram_request_type);
+     dram_request->AddOperand(tensor->getMemoryObject(), pim_operand_type);
+-    device->run_ramulator(dram_request);
+-    exec_status = device->dram_interface->getExecStatus(); 
++    device->run_ramulator(dram_request, target);
++    if (target == MemoryTarget::OFFCHIP_DRAM && device->offchip_dram_interface) {
++      exec_status = device->offchip_dram_interface->getExecStatus(); 
++    } else {
++      exec_status = device->dram_interface->getExecStatus(); 
++    }
+     device->addExecutionCache(exec_status, key);
+   }
+ 
+diff --git a/src/hardware/layer_impl.h b/src/hardware/layer_impl.h
+index 3ac7f5f..a96c7dc 100644
+--- a/src/hardware/layer_impl.h
++++ b/src/hardware/layer_impl.h
+@@ -13,7 +13,7 @@ namespace llm_system {
+ ExecStatus issueRamulator(Device_Ptr device, LayerType layer_type,
+                           ProcessorType processor_type,
+                           DRAMRequestType dram_request_type,
+-                          PIMOperandType pim_operand_type, Tensor_Ptr tensor);
++                          PIMOperandType pim_operand_type, Tensor_Ptr tensor, MemoryTarget target = MemoryTarget::HBM);
+ 
+ ExecStatus getIdealMemoryStatus(Device_Ptr device, ProcessorType processor_type,
+                           DRAMRequestType dram_request_type, Tensor_Ptr tensor);
+diff --git a/src/hardware/linear_impl.cpp b/src/hardware/linear_impl.cpp
+index c8f4309..749af22 100644
+--- a/src/hardware/linear_impl.cpp
++++ b/src/hardware/linear_impl.cpp
+@@ -42,19 +42,82 @@ ExecStatus LinearExecutionGPU(Device_Ptr device, Tensor_Ptr input,
+   if (use_ramulator) {
+     exec_status +=
+         issueRamulator(device, LayerType::LINEAR, ProcessorType::GPU,
+-                       DRAMRequestType::kRead, PIMOperandType::kDRAM, input);
+-    exec_status +=
++                       DRAMRequestType::kRead, PIMOperandType::kDRAM, input, MemoryTarget::HBM);
++
++    time_ns start_time = device->get_time();
++    ExecStatus weight_status =
+         issueRamulator(device, LayerType::LINEAR, ProcessorType::GPU,
+-                       DRAMRequestType::kRead, PIMOperandType::kDRAM, weight);
++                       DRAMRequestType::kRead, PIMOperandType::kDRAM, weight, weight->weight_target);
++    exec_status += weight_status;
++    time_ns weight_memory_cost = weight_status.memory_duration;
++    
++    if (weight->load_sisters) {
++      for (auto sister : weight->sister_weights) {
++        ExecStatus sister_status =
++            issueRamulator(device, LayerType::LINEAR, ProcessorType::GPU,
++                           DRAMRequestType::kRead, PIMOperandType::kDRAM, sister, MemoryTarget::OFFCHIP_DRAM);
++        exec_status += sister_status;
++        weight_memory_cost += sister_status.memory_duration;
++      }
++      weight->load_sisters = false;
++    }
++
++    if (weight->is_expert_weight) {
++      time_ns memory_cost = 0;
++      if (weight->weight_target == MemoryTarget::OFFCHIP_DRAM) {
++          memory_cost = weight_memory_cost;
++      } else {
++          // It was a hit, no OFFCHIP_DRAM delay
++          memory_cost = 0;
++      }
++      time_ns end_time = start_time + memory_cost;
++
++      static bool init_expert_load = false;
++      static std::ofstream csv;
++      static int request_id = 0;
++      if (!init_expert_load) {
++        const char* trace_dir_env = std::getenv("TRACE_DIR");
++        std::string path = "expert_load.csv";
++        if (trace_dir_env) {
++          path = std::string(trace_dir_env) + "/expert_load.csv";
++        }
++        csv.open(path, std::ios::app);
++        csv.seekp(0, std::ios::end);
++        if (csv.tellp() == 0) {
++          csv << "request_id,layer_id,expert_id,weight_tensor,size_bytes,start,end,duration,memory_source,memory_destination,cache_hit_or_miss\n";
++        }
++        init_expert_load = true;
++      }
++      
++      long total_size = weight->getSize();
++      for (auto sister : weight->sister_weights) {
++          total_size += sister->getSize();
++      }
++
++      std::string memory_source = (weight->weight_target == MemoryTarget::OFFCHIP_DRAM) ? "OFFCHIP_DRAM" : "HBM";
++      std::string hit_miss = (weight->weight_target == MemoryTarget::OFFCHIP_DRAM) ? "miss" : "hit";
++
++      csv << request_id++ << ","
++          << weight->expert_layer_id << ","
++          << weight->expert_id << ","
++          << weight->name << "," // could also say "all_weights"
++          << total_size << ","
++          << start_time << ","
++          << end_time << ","
++          << memory_cost << ","
++          << memory_source << ","
++          << "HBM" << ","
++          << hit_miss << "\n";
++      csv.flush();
++    }
++
+     exec_status +=
+         issueRamulator(device, LayerType::LINEAR, ProcessorType::GPU,
+-                       DRAMRequestType::kWrite, PIMOperandType::kDRAM, output);
++                       DRAMRequestType::kWrite, PIMOperandType::kDRAM, output, MemoryTarget::HBM);
+   } else {
+     exec_status.memory_duration = memory_duration;
+     exec_status += getIdealMemoryStatus(device, ProcessorType::GPU, DRAMRequestType::kRead, input);
+-
+     exec_status += getIdealMemoryStatus(device, ProcessorType::GPU, DRAMRequestType::kRead, weight);
+-    
+     exec_status += getIdealMemoryStatus(device, ProcessorType::GPU, DRAMRequestType::kWrite, output);
+   }
+ 
+diff --git a/src/module/expert.cpp b/src/module/expert.cpp
+index 7428006..ae5128d 100644
+--- a/src/module/expert.cpp
++++ b/src/module/expert.cpp
+@@ -82,6 +82,36 @@ ExpertFFN::ExpertFFN(std::string& prefix, std::string& name,
+           module_map_name, "expert_FFN_" + std::to_string(expert_id),
+           model_config, scheduler, expert_device_list, device, false, true);
+       add_module(expert_ffn);
++
++      auto gate = expert_ffn->get_module("gate_proj");
++      auto up = expert_ffn->get_module("up_proj");
++      auto down = expert_ffn->get_module("down_proj");
++
++      Tensor::Ptr w1 = nullptr;
++      Tensor::Ptr w3 = nullptr;
++      Tensor::Ptr w2 = nullptr;
++
++      if (gate && gate->get_module("Linear")) w1 = gate->get_module("Linear")->get_tensor("A");
++      else if (gate) w1 = gate->get_tensor("A");
++
++      if (up && up->get_module("Linear")) w3 = up->get_module("Linear")->get_tensor("A");
++      else if (up) w3 = up->get_tensor("A");
++
++      if (down && down->get_module("Linear")) w2 = down->get_module("Linear")->get_tensor("A");
++      else if (down) w2 = down->get_tensor("A");
++
++      if (w1 && w3 && w2) {
++        w1->is_expert_weight = true;
++        w1->expert_id = expert_id;
++        w3->is_expert_weight = true;
++        w3->expert_id = expert_id;
++        w2->is_expert_weight = true;
++        w2->expert_id = expert_id;
++
++        w1->sister_weights = {w3, w2};
++        w3->sister_weights = {w1, w2};
++        w2->sister_weights = {w1, w3};
++      }
+     }
+   }
+ 
+diff --git a/src/module/linear.cpp b/src/module/linear.cpp
+index 1c41464..6a89b5f 100644
+--- a/src/module/linear.cpp
++++ b/src/module/linear.cpp
+@@ -43,6 +43,20 @@ Tensor::Ptr Linear::forward(const Tensor::Ptr input,
+   tensor_list.push_back(A);
+   tensor_list.push_back(output);
+ 
++  A->weight_target = MemoryTarget::HBM;
++  A->load_sisters = false;
++  if (A->is_expert_weight) {
++    int layer_id = sequences_metadata->cur_layer;
++    A->expert_layer_id = layer_id;
++    if (!device->config.offchip_dram_cfg_path.empty()) {
++      if (!device->is_expert_resident(layer_id, A->expert_id)) {
++        A->weight_target = MemoryTarget::OFFCHIP_DRAM;
++        A->load_sisters = true;
++        device->mark_expert_resident(layer_id, A->expert_id);
++      }
++    }
++  }
++
+   // device->execution(total_flops);
+ 
+   LayerInfo info;
+diff --git a/src/module/module.h b/src/module/module.h
+index 5fbe854..971cb3b 100644
+--- a/src/module/module.h
++++ b/src/module/module.h
+@@ -59,6 +59,14 @@ class Module : public std::enable_shared_from_this<Module> {
+   Tensor::Ptr get_activation(std::string name, std::vector<int> shape = {1, 1},
+                              bool ready = true);
+ 
++  Tensor::Ptr get_tensor(std::string name) {
++    if (auto tensor = tensor_list.find(name); tensor != tensor_list.end()) {
++      return tensor->second;
++    } else {
++      return nullptr;
++    }
++  }
++
+   Tensor::Ptr get_cache(std::string name, int seq_idx, int kv_idx, bool compressed_kv,
+                         std::vector<int> shape = {1, 1});
+ 
+diff --git a/src/module/tensor.h b/src/module/tensor.h
+index 40451c1..427ce51 100644
+--- a/src/module/tensor.h
++++ b/src/module/tensor.h
+@@ -38,6 +38,14 @@ class Tensor : public std::enable_shared_from_this<Tensor> {
+   // for MoE layers
+   bool perform_with_optimal;
+   
++  // Phase 5 Expert metadata
++  bool is_expert_weight = false;
++  int expert_id = -1;
++  int expert_layer_id = -1;
++  std::vector<Tensor_Ptr> sister_weights;
++  MemoryTarget weight_target = MemoryTarget::HBM;
++  bool load_sisters = false;
++  
+   // for parallel execution
+   bool parallel_execution;
+   bool perform_at_high;
+diff --git a/src/module/timeboard.cpp b/src/module/timeboard.cpp
+index 2b78b70..0ffc43e 100644
+--- a/src/module/timeboard.cpp
++++ b/src/module/timeboard.cpp
+@@ -127,9 +127,54 @@ void TimeStamp::exportGantt(std::string filepath, int device_id) {
+     stamp->print();
+   }
+ 
++  this->writeProcessorTrace(device_id, -1);
++
+   std::cout.rdbuf(originalCoutBuffer);
+ }
+ 
++void TimeStamp::writeProcessorTrace(int device_id, int current_layer_id) {
++    if (name.find("MoE_decoder_") == 0) {
++      current_layer_id = std::stoi(name.substr(12));
++    } else if (name.find("Decoder_") == 0) {
++      current_layer_id = std::stoi(name.substr(8));
++    }
++
++    if (level != -1 && current_layer_id != -1) {
++      static bool init_proc_trace = false;
++      static std::ofstream proc_file;
++      if (!init_proc_trace) {
++        const char* trace_dir_env = std::getenv("TRACE_DIR");
++        std::string path = "processor_trace.csv";
++        if (trace_dir_env) {
++          path = std::string(trace_dir_env) + "/processor_trace.csv";
++        }
++        proc_file.open(path, std::ios::app);
++        // Only write header if file is empty
++        proc_file.seekp(0, std::ios::end);
++        if (proc_file.tellp() == 0) {
++          proc_file << "device_id,layer_id,operation,processor,start_time,end_time,duration\n";
++        }
++        init_proc_trace = true;
++      }
++
++      std::string proc_str = "GPU";
++      if (status.processor_type == ProcessorType::LOGIC) {
++        proc_str = "Logic";
++      } else if (status.processor_type == ProcessorType::PIM) {
++        proc_str = "PIM";
++      }
++      time_ns duration = status.end_time - status.start_time;
++      // Convert to strings
++      proc_file << device_id << "," << current_layer_id << "," << name << "," << proc_str << ","
++                << status.start_time << "," << status.end_time << "," << duration << "\n";
++    }
++
++  for (auto& stamp : leafstamp) {
++    stamp->writeProcessorTrace(device_id, current_layer_id);
++  }
++}
++
++
+ void TimeStamp::print_time() {
+   time_us duration = status.end_time / 1000.0 - status.start_time / 1000.0;
+   std::cout << " | " << std::setprecision(5) << duration << "us  | "
+diff --git a/src/module/timeboard.h b/src/module/timeboard.h
+index 819ec59..3dd4b3a 100644
+--- a/src/module/timeboard.h
++++ b/src/module/timeboard.h
+@@ -51,6 +51,7 @@ class TimeStamp {
+ 
+   void print();
+   void exportGantt(std::string filepath, int device_id);
++  void writeProcessorTrace(int device_id, int current_layer_id = -1);
+ 
+   void print_time();
+   void print_tensor();
+diff --git a/src/scheduler/sequence.cpp b/src/scheduler/sequence.cpp
+index 5692a99..543d770 100644
+--- a/src/scheduler/sequence.cpp
++++ b/src/scheduler/sequence.cpp
+@@ -170,11 +170,28 @@ void BatchedSequence::update_expert(int num_expert, int top_k,
+     skewness_weight[i] = 1.0 / pow((i + 1), scheduler->model_config.skewness);
+   }
+ 
++  static bool init_routing = false;
++  static std::ofstream routing_file;
++  if (!init_routing) {
++    const char* trace_dir_env = std::getenv("TRACE_DIR");
++    std::string path = "expert_routing.csv";
++    if (trace_dir_env) {
++      path = std::string(trace_dir_env) + "/expert_routing.csv";
++    }
++    routing_file.open(path, std::ios::app);
++    routing_file.seekp(0, std::ios::end);
++    if (routing_file.tellp() == 0) {
++      routing_file << "request_id,token_id,layer_id,topk_rank,expert_id\n";
++    }
++    init_routing = true;
++  }
++
+   for (auto seq : sequence) {
+     if (seq->num_process_token == 0) {
+       continue;
+     }
+     int seq_id = seq->expert_seq_id;
++    int request_id = seq->id;
+     int current_len = seq->current_len;
+ 
+     for (int token_id = current_len;
+@@ -185,6 +202,7 @@ void BatchedSequence::update_expert(int num_expert, int top_k,
+           e_id = scheduler->sequences_info[seq_id]
+                      ->expert_list[token_id * num_layer + cur_layer][k];
+           num_token_in_expert[e_id] += 1;
++          routing_file << request_id << "," << token_id << "," << cur_layer << "," << (k + 1) << "," << e_id << "\n";
+         }
+       } else {
+         std::set<int> expert_list;
+@@ -194,8 +212,11 @@ void BatchedSequence::update_expert(int num_expert, int top_k,
+         else{
+           expert_list = scheduler->getRandomExpert(top_k);
+         }
++        int k_rank = 1;
+         for (auto idx : expert_list) {
+           num_token_in_expert[idx] += 1;
++          routing_file << request_id << "," << token_id << "," << cur_layer << "," << k_rank << "," << idx << "\n";
++          k_rank++;
+         }
+       }
+     }

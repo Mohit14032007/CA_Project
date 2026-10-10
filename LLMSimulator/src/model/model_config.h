@@ -106,8 +106,11 @@ static ModelConfig glam = ModelConfig(4096, 128, 32, 32, 32, 8192, 16384, 16384,
 
 static ModelConfig deepseekV3 =
     ModelConfig(7168, 128, 60, 128, 128, 131072, 18432, 2048, 1, 1, 256, 1, 1, 8,
-                3, 3, 1536, 512, 128, 64, 129280, true, true, 0.0,"deepseekV3"); // n_layer = 60 (not consider MTP module)
+                3, 3, 1536, 512, 128, 64, 129280, true, true, 0.0,"deepseekV3");
 
+static ModelConfig debugV3 =
+    ModelConfig(7168, 128, 10, 128, 128, 131072, 18432, 2048, 1, 1, 256, 1, 1, 8,
+                3, 3, 1536, 512, 128, 64, 129280, true, true, 0.0,"debugV3");
 static ModelConfig llama3_405B =
     ModelConfig(16384, 128, 126, 128, 8, 131072, 53248, 53248, 1, 1, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 128256, false, false, 0.0,
                 "llama3_405B");

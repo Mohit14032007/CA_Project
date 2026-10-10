@@ -22,11 +22,18 @@ Ramulator::AddrVec_t MMapController::getAddrVec(addr address, long long bundle_i
   addr target_address = address + bundle_idx * memory_config.granul;
   AddrVec addr_vec = addrToVec(target_address);
   int channel = memory_config.num_channel * addr_vec.cube + addr_vec.channel;
-  Ramulator::AddrVec_t ramul_addr_vec = {
-      channel / 2,   channel % 2,  addr_vec.rank, addr_vec.bankgroup,
-      addr_vec.bank, addr_vec.row, addr_vec.col};
-
-  return ramul_addr_vec;
+  
+  if (memory_config.mem_type == MemoryConfig::MemoryType::DDR5) {
+    Ramulator::AddrVec_t ramul_addr_vec = {
+        channel, addr_vec.rank, addr_vec.bankgroup,
+        addr_vec.bank, addr_vec.row, addr_vec.col};
+    return ramul_addr_vec;
+  } else {
+    Ramulator::AddrVec_t ramul_addr_vec = {
+        channel / 2,   channel % 2,  addr_vec.rank, addr_vec.bankgroup,
+        addr_vec.bank, addr_vec.row, addr_vec.col};
+    return ramul_addr_vec;
+  }
 }
 
 Ramulator::AddrVec_t MMapController::getAddrVecLOGIC(addr address,
@@ -34,11 +41,18 @@ Ramulator::AddrVec_t MMapController::getAddrVecLOGIC(addr address,
   addr target_address = address + bundle_idx * memory_config.granul;
   AddrVec addr_vec = addrToVecLOGIC(target_address);
   int channel = memory_config.num_channel * addr_vec.cube + addr_vec.channel;
-  Ramulator::AddrVec_t ramul_addr_vec = {
-      channel / 2,   channel % 2,  addr_vec.rank, addr_vec.bankgroup,
-      addr_vec.bank, addr_vec.row, addr_vec.col};
-
-  return ramul_addr_vec;
+  
+  if (memory_config.mem_type == MemoryConfig::MemoryType::DDR5) {
+    Ramulator::AddrVec_t ramul_addr_vec = {
+        channel, addr_vec.rank, addr_vec.bankgroup,
+        addr_vec.bank, addr_vec.row, addr_vec.col};
+    return ramul_addr_vec;
+  } else {
+    Ramulator::AddrVec_t ramul_addr_vec = {
+        channel / 2,   channel % 2,  addr_vec.rank, addr_vec.bankgroup,
+        addr_vec.bank, addr_vec.row, addr_vec.col};
+    return ramul_addr_vec;
+  }
 }
 
 AddrVec MMapController::addrToVec(addr address) {
@@ -66,7 +80,10 @@ AddrVec MMapController::addrToVec(addr address) {
   address /= memory_config.num_col;
 
   int row_idx = address;
-  assertTrue(row_idx < memory_config.num_row, "Unvalid memory hasing");
+  if (!(row_idx < memory_config.num_row)) {
+    printf("ERROR: Unvalid memory hasing in addrToVec: address %d, row_idx %d, num_row %d\n", address, row_idx, memory_config.num_row);
+    assertTrue(false, "Unvalid memory hasing");
+  }
 
   AddrVec addr = {cube_idx, channel_idx, rank_idx, bg_idx,
                   bank_idx, row_idx,     col_idx};
@@ -106,7 +123,10 @@ AddrVec MMapController::addrToVecLOGIC(addr address) {
 
   int bank_idx = bank_upper_idx * 2 + bank_under_idx;
 
-  assertTrue(rank_idx < memory_config.num_rank, "Unvalid memory hasing");
+  if (!(rank_idx < memory_config.num_rank)) {
+    printf("ERROR: Unvalid memory hasing in addrToVecLOGIC: rank_idx %d, num_rank %d\n", rank_idx, memory_config.num_rank);
+    assertTrue(false, "Unvalid memory hasing");
+  }
 
   AddrVec addr = {cube_idx, channel_idx, rank_idx, bg_idx,
                   bank_idx, row_idx,     col_idx};

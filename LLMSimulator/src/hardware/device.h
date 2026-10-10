@@ -2,6 +2,8 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <list>
+#include <unordered_map>
 
 #include "common/type.h"
 #include "dram/dram_type.h"
@@ -109,13 +111,27 @@ class Device : public std::enable_shared_from_this<Device> {
   MMapController_Ptr mmap_controller;
   MMapController_Ptr offchip_mmap_controller;
 
-  // Phase 5 Expert Residency Tracker
-  std::set<std::pair<int, int>> resident_experts;
-  bool is_expert_resident(int layer_id, int expert_id) {
-    return resident_experts.find({layer_id, expert_id}) != resident_experts.end();
-  }
-  void mark_expert_resident(int layer_id, int expert_id) {
-    resident_experts.insert({layer_id, expert_id});
+  // Phase 5/DS-3 Expert Residency Tracker (LRU Cache)
+  struct PairHash {
+    template <class T1, class T2>
+    std::size_t operator () (const std::pair<T1,T2> &p) const {
+        auto h1 = std::hash<T1>{}(p.first);
+        auto h2 = std::hash<T2>{}(p.second);
+        return h1 ^ h2;  
+    }
+  };
+  
+  std::list<std::pair<int, int>> lru_expert_list;
+  std::unordered_map<std::pair<int, int>, std::list<std::pair<int, int>>::iterator, PairHash> resident_experts;
+  long long cache_capacity_bytes = std::getenv("DEBUG_CACHE_CAPACITY") ? std::stoll(std::getenv("DEBUG_CACHE_CAPACITY")) : 80000000000LL;
+  long long resident_bytes = 0;
+
+  bool is_expert_resident(int layer_id, int expert_id);
+  void mark_expert_resident(int layer_id, int expert_id, long long expert_size);
+  void reset_expert_cache() {
+      lru_expert_list.clear();
+      resident_experts.clear();
+      resident_bytes = 0;
   }
 
   bool perform_execution;
