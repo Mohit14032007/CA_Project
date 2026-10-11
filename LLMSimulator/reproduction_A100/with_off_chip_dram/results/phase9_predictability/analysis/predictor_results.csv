@@ -1,0 +1,4 @@
+Predictor,Lookahead,Top-1 Accuracy,Top-k Recall,Exact Set Accuracy
+Most Frequent (Top-1),1,0.296142578125,,
+Previous Token (Top-K),1,,0.248046875,0.037109375
+Random (Top-K),1,0.125,0.25,0.03571428571428571

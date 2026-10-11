@@ -1,0 +1,6 @@
+token_id,step_index,simulated_device_latency_ms,simulated_ddr5_time_ms,simulated_non_ddr5_time_ms,analytical_roofline_compute_ms,host_step_time_s_approx,ddr5_to_roofline_ratio
+2048,1,1801.05,1778.905,22.145,0.1355,4231.84,13128.5
+2049,2,1746.59,1724.283,22.307,0.1355,4231.84,12725.3
+2050,3,1734.92,1712.578,22.342,0.1355,4231.84,12639.0
+2051,4,1696.03,1673.578,22.452,0.1355,4231.84,12351.1
+2052,5,1734.93,1712.586,22.344,0.1355,4231.84,12639.0

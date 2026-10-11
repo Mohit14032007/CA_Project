@@ -1,0 +1,14 @@
+metric_name,reference_ds6c4_value,recalculated_ds6c6_value,delta,verification_status,source_trace_file
+Decoding Steps,5,5,0,EXACT_MATCH,traces/expert_routing.csv
+Routed Expert Selections,2280,2280,0,EXACT_MATCH,traces/expert_routing.csv
+Cold Expert Batches,2205,2205,0,EXACT_MATCH,traces/expert_load.csv
+DDR5 Transferred Bytes,194217246720,194217246720,0,EXACT_MATCH,traces/expert_load.csv
+Cache Hits,4635,4635,0,EXACT_MATCH,traces/expert_cache.csv
+Cache Misses,2205,2205,0,EXACT_MATCH,traces/expert_cache.csv
+Cache Inserts,2205,2205,0,EXACT_MATCH,traces/expert_cache.csv
+Cache Evictions,1297,1297,0,EXACT_MATCH,traces/expert_cache.csv
+Peak Cache Residency Bytes,79976988672,79976988672,0,EXACT_MATCH,traces/expert_cache.csv
+Simulated DDR5 Time ms,8601.93,8601.93,0.00,EXACT_MATCH,traces/expert_load.csv
+Simulated Device Latency ms,8713.53,8713.53,0.00,EXACT_MATCH,csv/deepseekV3_..._decode.csv
+Host Wall Runtime s,21159,21159.21,+0.21,EXACT_MATCH,logs/run.log
+Process Exit Code,0,0,0,EXACT_MATCH,logs/completion_status.txt

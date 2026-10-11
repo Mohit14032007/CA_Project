@@ -1,0 +1,1 @@
+	lm_head | 0us  | 6728.6 - 6728.6 | tensor(4, 4096) -> tensor(4, 32000) | compute util: 0, memory util: 0, Op/B 0

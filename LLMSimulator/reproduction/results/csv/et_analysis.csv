@@ -1,0 +1,2 @@
+Comparison,Expert_Exec_Time_PE,Expert_Exec_Time_ET,AllReduce_Count_PE,AllReduce_Count_ET,AllReduce_Time_ET,Total_Time_Diff
+Duplex+PE vs Duplex+PE+ET,16976754.6,19349536.2,128,128,670324.48,-1101149.2831820007

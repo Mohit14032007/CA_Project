@@ -1,0 +1,11 @@
+{
+  "exact_replay_routing_match": true,
+  "cold_expert_count_equals_expected": true,
+  "resident_bytes_equals_expected": true,
+  "zero_evictions_verified": true,
+  "pass2_ddr5_delta_zero": true,
+  "all_layers_covered_57": true,
+  "raw_hashes_verified": true,
+  "exit_code_zero": true,
+  "overall_integrity_passed": true
+}

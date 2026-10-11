@@ -1,0 +1,2 @@
+expert_accesses,unique_experts,expert_misses,expert_hits,total_offchip_load_ns,mean_load_ns,mean_compute_ns,median_load_ns,median_compute_ns,load_compute_ratio,total_compute_ns,total_expert_bytes
+768,256,0,768,0.0,0.0,135036.41796875,0.0,134948.0,0.0,103707969.0,0

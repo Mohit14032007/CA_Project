@@ -1,0 +1,5 @@
+configuration,total_energy,processor_energy,moe_energy,attention_energy,communication_energy
+gpu_baseline,3136881018.593278,0,0,0,0
+duplex,3340542300.003845,0,0,0,0
+duplex_pe,3340542300.003845,0,0,0,0
+duplex_pe_et,3305614559.892482,0,0,0,0

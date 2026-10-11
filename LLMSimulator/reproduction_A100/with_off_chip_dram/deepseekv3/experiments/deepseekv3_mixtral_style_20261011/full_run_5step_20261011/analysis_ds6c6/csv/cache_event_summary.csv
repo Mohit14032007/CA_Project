@@ -1,0 +1,5 @@
+action,total_events,total_bytes_involved,unique_experts_affected,description
+HIT,4635,136082693280,256,Weight tensor access found resident in GPU HBM (zero extra latency)
+MISS,2205,64739082240,256,Weight tensor access absent from HBM (triggered off-chip DDR5 batch load)
+INSERT,2205,64739082240,256,Fetched weight inserted into LRU cache at MRU position
+EVICT,1297,38080086016,242,LRU victim weight tensor evicted from HBM upon capacity saturation (80 GB)

@@ -1,0 +1,337 @@
+commit 419252761fbdb95b789778a02256d458a5537ec7
+Author: juhwany97 <juhwan.cho@scale.snu.ac.kr>
+Date:   Tue Oct 14 14:18:37 2025 +0900
+
+    Add Llama-4 support
+
+diff --git a/eval/test.cpp b/eval/test.cpp
+index 6e7f4ff..c78b6e6 100644
+--- a/eval/test.cpp
++++ b/eval/test.cpp
+@@ -172,7 +172,12 @@ int main(int argc, char *argv[]) {
+     model_config = grok1;
+   } else if (!model_name.compare("deepseekV3")) {
+     model_config = deepseekV3;
+-  } else {
++  }else if (!model_name.compare("llama4_scout")) {
++    model_config = llama4_scout;
++  }else if (!model_name.compare("llama4_maverick")) {
++    model_config = llama4_maverick;
++  } 
++  else {
+     fail("No model configuration of " + model_name);
+   }
+ 
+diff --git a/src/module/communication.cpp b/src/module/communication.cpp
+index 155454e..9019923 100644
+--- a/src/module/communication.cpp
++++ b/src/module/communication.cpp
+@@ -111,7 +111,10 @@ Tensor::Ptr MoEScatter::forward(const Tensor::Ptr input,
+   }
+ 
+   time_ns total_time = 0;
++  time_ns send_time = 0;
++  time_ns receive_time = 0;
+ 
++  // Send time // 
+   int intra_node_comm_token = 0;
+   int inter_node_comm_token = 0;
+ 
+@@ -173,20 +176,90 @@ Tensor::Ptr MoEScatter::forward(const Tensor::Ptr input,
+     time_ns inter_node_latency = inter_node_comm_size / device->config.node_ict_bandwidth * 1000 * 1000 * 1000
+                                 + device->config.node_ict_latency;
+ 
+-    total_time = std::max(intra_node_latency, inter_node_latency);
++    send_time = std::max(intra_node_latency, inter_node_latency);
+   }
+   else if (sequences_metadata->get_gen_process_token() > 0){
+     // decode - use only InifiniBand, but when num_node == 1, use NVLink
+     if(device->config.num_node == 1){
+-      total_time = (intra_node_comm_size + inter_node_comm_size) / device->config.device_ict_bandwidth * 1000 * 1000 * 1000
++      send_time = (intra_node_comm_size + inter_node_comm_size) / device->config.device_ict_bandwidth * 1000 * 1000 * 1000
+       + device->config.device_ict_latency;
+     }
+     else{
+-      total_time = (intra_node_comm_size + inter_node_comm_size) / device->config.node_ict_bandwidth * 1000 * 1000 * 1000
++      send_time = (intra_node_comm_size + inter_node_comm_size) / device->config.node_ict_bandwidth * 1000 * 1000 * 1000
+       + device->config.node_ict_latency;
+     }
+   }
+ 
++  // Receive time //
++  intra_node_comm_token = 0;
++  inter_node_comm_token = 0;
++
++  int dst_device_rank = device->device_total_rank; // dst: destination device, current device
++  int dst_node = dst_device_rank / device->config.num_device;
++
++  int dst_dp_rank = device->device_total_rank / ne_tp_dg; // data parallel index
++  
++  int expert_id_offset = device->model_config.num_routed_expert / total_num_device * (dst_device_rank / e_tp_dg) * e_tp_dg; // experts in a dst_device
++  int num_expert_per_device = device->model_config.num_routed_expert / total_num_device * e_tp_dg;
++
++  for(int src_dp_idx = 0; src_dp_idx < total_num_device / ne_tp_dg; src_dp_idx ++){ 
++    if(src_dp_idx != dst_dp_rank){ // from other dp space
++
++      int src_device_rank = src_dp_idx * ne_tp_dg;
++      int src_node = src_device_rank / device->config.num_device;
++
++      if(dst_node == src_node){ 
++        // intra node
++        for(int e_id = expert_id_offset; e_id < expert_id_offset + num_expert_per_device; e_id ++){
++          intra_node_comm_token += sequences_metadata->scheduler->running_queue[src_dp_idx]->local_num_token_in_expert[e_id]; // from the experts in a src device
++        }
++      }
++      else{ 
++        // inter node
++        for(int e_id = expert_id_offset; e_id < expert_id_offset + num_expert_per_device; e_id ++){
++          inter_node_comm_token += sequences_metadata->scheduler->running_queue[src_dp_idx]->local_num_token_in_expert[e_id];
++        }
++      }
++    }
++  }
++
++  // if ne_tp_dg > 1, tp sharing devices have same tokens. Therefore, need to be divided by ne_tp_dg (send only 1/ne_tp_dg tokens)
++  
++  intra_node_comm_size = 1.0 * intra_node_comm_token * k * input->precision_byte;
++  inter_node_comm_size = 1.0 * inter_node_comm_token * k * input->precision_byte;
++
++  intra_node_comm_size /= ne_tp_dg;
++  inter_node_comm_size /= ne_tp_dg;
++
++  if(intra_node_comm_size == 0 && inter_node_comm_size == 0){
++    return output;
++  }
++
++  if(sequences_metadata->get_sum_process_token() > 0){
++    // prefill & mixed stage - use both NVLink and InfiniBand
++
++    time_ns intra_node_latency = intra_node_comm_size / device->config.device_ict_bandwidth * 1000 * 1000 * 1000
++                                + device->config.device_ict_latency;
++                                
++    time_ns inter_node_latency = inter_node_comm_size / device->config.node_ict_bandwidth * 1000 * 1000 * 1000
++                                + device->config.node_ict_latency;
++
++    receive_time = std::max(intra_node_latency, inter_node_latency);
++  }
++  else if (sequences_metadata->get_gen_process_token() > 0){
++    // decode - use only InifiniBand, but when num_node == 1, use NVLink
++    if(device->config.num_node == 1){
++      receive_time = (intra_node_comm_size + inter_node_comm_size) / device->config.device_ict_bandwidth * 1000 * 1000 * 1000
++      + device->config.device_ict_latency;
++    }
++    else{
++      receive_time = (intra_node_comm_size + inter_node_comm_size) / device->config.node_ict_bandwidth * 1000 * 1000 * 1000
++      + device->config.node_ict_latency;
++    }
++  }
++
++  total_time = std::max(send_time, receive_time);
++
+   if (input->parallel_execution && !device->config.communication_hiding) {
+     if (input->isPerformHigh()) {
+       device->status.high_time += total_time;
+@@ -223,7 +296,10 @@ TensorVec MoEGather::forward(const TensorVec input_vec,
+   }
+ 
+   time_ns total_time = 0;
++  time_ns send_time = 0;
++  time_ns receive_time = 0;
+ 
++  // Receive time // 
+   int intra_node_comm_token = 0;
+   int inter_node_comm_token = 0;
+ 
+@@ -292,20 +368,90 @@ TensorVec MoEGather::forward(const TensorVec input_vec,
+     time_ns inter_node_latency = inter_node_comm_size / device->config.node_ict_bandwidth * 1000 * 1000 * 1000
+                                 + device->config.node_ict_latency;
+ 
+-    total_time = std::max(intra_node_latency, inter_node_latency);
++    receive_time = std::max(intra_node_latency, inter_node_latency);
+   }
+   else if (sequences_metadata->get_gen_process_token() > 0){
+     // decode - use only InifiniBand, but when num_node == 1, use NVLink
+     if(device->config.num_node == 1){
+-      total_time = (intra_node_comm_size + inter_node_comm_size) / device->config.device_ict_bandwidth * 1000 * 1000 * 1000
++      receive_time = (intra_node_comm_size + inter_node_comm_size) / device->config.device_ict_bandwidth * 1000 * 1000 * 1000
+       + device->config.device_ict_latency;
+     }
+     else{
+-      total_time = (intra_node_comm_size + inter_node_comm_size) / device->config.node_ict_bandwidth * 1000 * 1000 * 1000
++      receive_time = (intra_node_comm_size + inter_node_comm_size) / device->config.node_ict_bandwidth * 1000 * 1000 * 1000
+       + device->config.node_ict_latency;
+     }
+   }
+ 
++  // Send time //
++  intra_node_comm_token = 0;
++  inter_node_comm_token = 0;
++
++  int src_device_rank = device->device_total_rank; // src: source device, current device
++  int src_node = src_device_rank / device->config.num_device;
++
++  int src_dp_rank = device->device_total_rank / ne_tp_dg; // data parallel index
++  
++  int expert_id_offset = device->model_config.num_routed_expert / total_num_device * (src_device_rank / e_tp_dg) * e_tp_dg; // experts in a src_device
++  int num_expert_per_device = device->model_config.num_routed_expert / total_num_device * e_tp_dg;
++
++  for(int dst_dp_idx = 0; dst_dp_idx < total_num_device / ne_tp_dg; dst_dp_idx ++){ 
++    if(dst_dp_idx != src_dp_rank){ // to other dp space
++
++      int dst_device_rank = dst_dp_idx * ne_tp_dg;
++      int dst_node = dst_device_rank / device->config.num_device;
++
++      if(dst_node == src_node){ 
++        // intra node
++        for(int e_id = expert_id_offset; e_id < expert_id_offset + num_expert_per_device; e_id ++){
++          intra_node_comm_token += sequences_metadata->scheduler->running_queue[dst_dp_idx]->local_num_token_in_expert[e_id]; // to orig device from the experts in a src device
++        }
++      }
++      else{ 
++        // inter node
++        for(int e_id = expert_id_offset; e_id < expert_id_offset + num_expert_per_device; e_id ++){
++          inter_node_comm_token += sequences_metadata->scheduler->running_queue[dst_dp_idx]->local_num_token_in_expert[e_id];
++        }
++      }
++    }
++  }
++
++  // if ne_tp_dg > 1, tp sharing devices have same tokens. Therefore, need to be divided by ne_tp_dg (send only 1/ne_tp_dg tokens)
++  
++  intra_node_comm_size = 1.0 * intra_node_comm_token * k * input->precision_byte;
++  inter_node_comm_size = 1.0 * inter_node_comm_token * k * input->precision_byte;
++
++  intra_node_comm_size /= ne_tp_dg;
++  inter_node_comm_size /= ne_tp_dg;
++
++  if(intra_node_comm_size == 0 && inter_node_comm_size == 0){
++    return input_vec;
++  }
++
++  if(sequences_metadata->get_sum_process_token() > 0){
++    // prefill & mixed stage - use both NVLink and InfiniBand
++
++    time_ns intra_node_latency = intra_node_comm_size / device->config.device_ict_bandwidth * 1000 * 1000 * 1000
++                                + device->config.device_ict_latency;
++                                
++    time_ns inter_node_latency = inter_node_comm_size / device->config.node_ict_bandwidth * 1000 * 1000 * 1000
++                                + device->config.node_ict_latency;
++
++    send_time = std::max(intra_node_latency, inter_node_latency);
++  }
++  else if (sequences_metadata->get_gen_process_token() > 0){
++    // decode - use only InifiniBand, but when num_node == 1, use NVLink
++    if(device->config.num_node == 1){
++      send_time = (intra_node_comm_size + inter_node_comm_size) / device->config.device_ict_bandwidth * 1000 * 1000 * 1000
++      + device->config.device_ict_latency;
++    }
++    else{
++      send_time = (intra_node_comm_size + inter_node_comm_size) / device->config.node_ict_bandwidth * 1000 * 1000 * 1000
++      + device->config.node_ict_latency;
++    }
++  }
++
++  total_time = std::max(send_time, receive_time);
++
+   if (input->parallel_execution && !device->config.communication_hiding) {
+     if (input->isPerformHigh()) {
+       device->status.high_time += total_time;
+diff --git a/src/module/expert.cpp b/src/module/expert.cpp
+index 8119196..7428006 100644
+--- a/src/module/expert.cpp
++++ b/src/module/expert.cpp
+@@ -111,12 +111,11 @@ ExpertFFN::ExpertFFN(std::string& prefix, std::string& name,
+     non_moe_device_list, device);      
+   add_module(all_reduce_for_gather);
+ 
+-
+   auto sync_0 = Sync::Create(module_map_name, "sync_0", device_list, device);
+   add_module(sync_0);
+ 
+-  auto sync_1 = Sync::Create(module_map_name, "sync_1", device_list, device);
+-  add_module(sync_1);
++  auto sync_for_moe_scatter = Sync::Create(module_map_name, "sync_for_moe_scatter", device_list, device);
++  add_module(sync_for_moe_scatter);
+ 
+   auto sync_2 = Sync::Create(module_map_name, "sync_2", device_list, device);
+   add_module(sync_2);
+@@ -124,16 +123,20 @@ ExpertFFN::ExpertFFN(std::string& prefix, std::string& name,
+   auto sync_3 = Sync::Create(module_map_name, "sync_3", device_list, device);
+   add_module(sync_3);
+ 
+-  auto sync_4 = Sync::Create(module_map_name, "sync_4", device_list, device);
+-  add_module(sync_4);
++  auto sync_for_moe_gather = Sync::Create(module_map_name, "sync_for_moe_gather", device_list, device);
++  add_module(sync_for_moe_gather);
+ 
+   auto sync_5 = Sync::Create(module_map_name, "sync_5", device_list, device);
+   add_module(sync_5);
++
++  auto sync_6 = Sync::Create(module_map_name, "sync_6", device_list, device);
++  add_module(sync_6);
+ }
+ 
+ Tensor::Ptr ExpertFFN::forward(const Tensor::Ptr input,
+                                BatchedSequence::Ptr sequences_metadata) {
+   Module::Ptr sync_0 = get_module("sync_0");
++  Module::Ptr sync_for_moe_scatter = get_module("sync_for_moe_scatter");
+   (*sync_0)(input, sequences_metadata);
+ 
+   Module::Ptr gate_fn = get_module("gate_fn");
+@@ -147,6 +150,8 @@ Tensor::Ptr ExpertFFN::forward(const Tensor::Ptr input,
+   Module::Ptr route = get_module("moe_route");
+ 
+   Tensor::Ptr scatter_out = (*moe_scatter)(gate_update_out, sequences_metadata);
++  (*sync_for_moe_scatter)(input, sequences_metadata);
++
+   TensorVec input_vec;
+   input_vec.push_back(scatter_out);
+   TensorVec route_out = (*route)(input_vec, sequences_metadata);
+@@ -155,11 +160,11 @@ Tensor::Ptr ExpertFFN::forward(const Tensor::Ptr input,
+ 
+   Tensor::Ptr result;
+ 
+-  Module::Ptr sync_1 = get_module("sync_1");
+   Module::Ptr sync_2 = get_module("sync_2");
+   Module::Ptr sync_3 = get_module("sync_3");
+-  Module::Ptr sync_4 = get_module("sync_4");
++  Module::Ptr sync_for_moe_gather = get_module("sync_for_moe_gather");
+   Module::Ptr sync_5 = get_module("sync_5");
++  Module::Ptr sync_6 = get_module("sync_6");
+ 
+   Module::Ptr all_reduce_for_e_tp = get_module("moe_all_reduce_for_e_tp");
+   Module::Ptr all_reduce_for_gather = get_module("moe_all_reduce_for_gather");
+@@ -175,20 +180,20 @@ Tensor::Ptr ExpertFFN::forward(const Tensor::Ptr input,
+     expert_out.push_back(result);
+   }
+ 
+-  (*sync_1)(input, sequences_metadata);
++  (*sync_2)(input, sequences_metadata);
+ 
+   result = (*all_reduce_for_e_tp)(input, sequences_metadata);
+ 
+-  (*sync_2)(input, sequences_metadata);
++  (*sync_3)(input, sequences_metadata);
+ 
+   Module::Ptr moe_gather = get_module("moe_gather");
+   TensorVec moe_gather_out = (*moe_gather)(expert_out, sequences_metadata);
+ 
+-  (*sync_3)(input, sequences_metadata);
++  (*sync_for_moe_gather)(input, sequences_metadata);
+ 
+   result = (*all_reduce_for_gather)(input, sequences_metadata);
+ 
+-  (*sync_4)(input, sequences_metadata);
++  (*sync_5)(input, sequences_metadata);
+   
+   // Shared Expert //
+   for(int shared_expert_idx = 0 ; shared_expert_idx < num_shared_expert; shared_expert_idx ++){
+@@ -196,7 +201,7 @@ Tensor::Ptr ExpertFFN::forward(const Tensor::Ptr input,
+     result = (*shared_expert_ffn)(input, sequences_metadata);
+   }
+ 
+-  (*sync_5)(input, sequences_metadata);
++  (*sync_6)(input, sequences_metadata);
+ 
+   return result;
+ }

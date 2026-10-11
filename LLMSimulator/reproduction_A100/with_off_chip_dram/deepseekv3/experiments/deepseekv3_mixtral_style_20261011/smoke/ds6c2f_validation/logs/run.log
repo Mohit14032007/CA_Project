@@ -1,0 +1,80 @@
+======================================================================
+DS-6C-2F: Launching Bounded Smoke Validation Run
+Executable: /home/mohman/ca_project/LLMSimulator/build/run_deepseekv3_mixtral_style
+Config: /home/mohman/ca_project/LLMSimulator/reproduction_A100/with_off_chip_dram/deepseekv3/experiments/deepseekv3_mixtral_style_20261011/configs/deepseekv3_smoke_test_ds6c2f.yaml
+Target Trace Dir: /home/mohman/ca_project/LLMSimulator/reproduction_A100/with_off_chip_dram/deepseekv3/experiments/deepseekv3_mixtral_style_20261011/smoke/ds6c2f_validation/traces
+Target CSV Dir: /home/mohman/ca_project/LLMSimulator/reproduction_A100/with_off_chip_dram/deepseekv3/experiments/deepseekv3_mixtral_style_20261011/smoke/ds6c2f_validation/csv
+Start Time (UTC): 2026-10-10T18:07:09Z
+======================================================================
+[INFO] Simulator running under PID: 96801
+======================================================================
+DS-6C-2: DeepSeek-V3 Mixtral-Style Experiment Harness
+Executable: run_deepseekv3_mixtral_style
+Config Path: /home/mohman/ca_project/LLMSimulator/reproduction_A100/with_off_chip_dram/deepseekv3/experiments/deepseekv3_mixtral_style_20261011/configs/deepseekv3_smoke_test_ds6c2f.yaml
+======================================================================
+
+[TOPOLOGY & GEOMETRY VALIDATION]
+  Model: DeepSeek-V3 (5 layers: 3 dense, 2 MoE)
+  Experts: 256 routed, top-8, 1 shared
+  Expert Footprint: 88,080,384 bytes (~88.08 MB FP16)
+  Total Expert Inventory: 14,592 experts = 45097156608 bytes (~1.285 TB)
+  DDR5 Backing Capacity: 2748779069440 bytes (~2.75 TB / 2.5 TiB across 10,485,760 rows)
+  Max Production Row Index: 172032 (Row Utilization: 1.64% < 100%)
+  HBM Local Cache Budget: 80000000000 bytes (74.51 GB)
+  Trace Output Directory: reproduction_A100/with_off_chip_dram/deepseekv3/experiments/deepseekv3_mixtral_style_20261011/smoke/ds6c2f_validation/traces/
+  Summary CSV Directory: reproduction_A100/with_off_chip_dram/deepseekv3/experiments/deepseekv3_mixtral_style_20261011/smoke/ds6c2f_validation/csv/
+  Workload: input_len=2048, output_len=4, iter=2, batch_size=1
+Using synthesis trace
+
+[INITIALIZATION] Scheduler, Cluster, Device, and Model Graph created.
+
+--- Executing Controlled Sequential Decoding Loop (2 steps) ---
+[PROGRESS] Elapsed: 30s | RAM: 5922MB | RSS: 312872KB | Routing: 9 | Load: 17 | Cache: 10
+[PROGRESS] Elapsed: 60s | RAM: 5905MB | RSS: 315256KB | Routing: 9 | Load: 41 | Cache: 22
+[PROGRESS] Elapsed: 91s | RAM: 5877MB | RSS: 325892KB | Routing: 17 | Load: 65 | Cache: 34
+[PROGRESS] Elapsed: 121s | RAM: 5871MB | RSS: 327668KB | Routing: 17 | Load: 89 | Cache: 46
+[PROGRESS] Elapsed: 151s | RAM: 5811MB | RSS: 328392KB | Routing: 17 | Load: 105 | Cache: 54
+  [Step 0] Token SeqLen=2048 | Host: 171.90s | Simulated DDR5: 62.42 ms | Resident Experts: 16 (1.31 GB)
+[PROGRESS] Elapsed: 181s | RAM: 5807MB | RSS: 329260KB | Routing: 25 | Load: 129 | Cache: 66
+[PROGRESS] Elapsed: 211s | RAM: 5810MB | RSS: 329260KB | Routing: 25 | Load: 153 | Cache: 78
+[PROGRESS] Elapsed: 242s | RAM: 5811MB | RSS: 329260KB | Routing: 25 | Load: 177 | Cache: 90
+[PROGRESS] Elapsed: 272s | RAM: 5930MB | RSS: 329260KB | Routing: 33 | Load: 201 | Cache: 102
+[PROGRESS] Elapsed: 303s | RAM: 5930MB | RSS: 329260KB | Routing: 33 | Load: 225 | Cache: 114
+[PROGRESS] Elapsed: 333s | RAM: 5926MB | RSS: 329844KB | Routing: 33 | Load: 249 | Cache: 126
+  [Step 1] Token SeqLen=2049 | Host: 167.09s | Simulated DDR5: 62.42 ms | Resident Experts: 32 (2.62 GB)
+
+======================================================================
+EXECUTION COMPLETE
+  Total Host Runtime: 338.99 seconds
+  Final Resident Experts: 32
+  Final Resident Memory:  2818572288 bytes (2.62 GB)
+  Routing Records: 33 lines
+  Load Records:    257 lines
+  Cache Records:   129 lines
+======================================================================
+======================================================================
+Process ended after 343s with code 0 at 2026-10-10T18:12:52Z
+DS-6C-2F STATUS: SUCCESS (NORMAL)
+======================================================================
+[INFO] Analyzing experiment traces at /home/mohman/ca_project/LLMSimulator/reproduction_A100/with_off_chip_dram/deepseekv3/experiments/deepseekv3_mixtral_style_20261011/smoke/ds6c2f_validation/traces...
+[INFO] Ingesting summary CSV from /home/mohman/ca_project/LLMSimulator/reproduction_A100/with_off_chip_dram/deepseekv3/experiments/deepseekv3_mixtral_style_20261011/smoke/ds6c2f_validation/csv...
+[INFO] Writing processed datasets to /home/mohman/ca_project/LLMSimulator/reproduction_A100/with_off_chip_dram/deepseekv3/experiments/deepseekv3_mixtral_style_20261011/smoke/ds6c2f_validation/processed...
+  [ROUTING] Read 32 routing events across 4 layers and 2 tokens.
+  [LOAD] Read 256 load records (96 aggregate batches).
+  [CACHE] Read 128 events: 64 HITs, 32 MISSes, 32 INSERTs, 0 EVICTs.
+  [SIM_CSV] Ingested canonical summary CSV: deepseekV3_synthesis_2048_4_GPU_N1_D1_TP1_DP1_maxbatch1_maxprocess524288_iter2_skew0_precision_byte2_parallel_execution0_ramul_decode.csv (2 rows)
+[SUCCESS] All metrics processed and written to /home/mohman/ca_project/LLMSimulator/reproduction_A100/with_off_chip_dram/deepseekv3/experiments/deepseekv3_mixtral_style_20261011/smoke/ds6c2f_validation/processed.
+
+[INFO] Running multi-token sequential analysis for /home/mohman/ca_project/LLMSimulator/reproduction_A100/with_off_chip_dram/deepseekv3/experiments/deepseekv3_mixtral_style_20261011/smoke/ds6c2f_validation/traces...
+  [TEMPORAL] Mean Jaccard similarity between adjacent tokens: 0.0000
+  [CACHE] Eviction total: 0, Peak bytes: 2818572288 B
+[SUCCESS] Advanced sequential analysis saved to /home/mohman/ca_project/LLMSimulator/reproduction_A100/with_off_chip_dram/deepseekv3/experiments/deepseekv3_mixtral_style_20261011/smoke/ds6c2f_validation/processed/advanced_analysis.json.
+
+[INFO] Generating figures from /home/mohman/ca_project/LLMSimulator/reproduction_A100/with_off_chip_dram/deepseekv3/experiments/deepseekv3_mixtral_style_20261011/smoke/ds6c2f_validation/processed and /home/mohman/ca_project/LLMSimulator/reproduction_A100/with_off_chip_dram/deepseekv3/experiments/deepseekv3_mixtral_style_20261011/smoke/ds6c2f_validation/traces into /home/mohman/ca_project/LLMSimulator/reproduction_A100/with_off_chip_dram/deepseekv3/experiments/deepseekv3_mixtral_style_20261011/smoke/ds6c2f_validation/figures...
+  Generated fig1_temporal_routing_correlation (PNG & PDF)
+  Generated fig2_multi_token_cache_occupancy (PNG & PDF)
+  Generated fig3_lru_eviction_distribution (PNG & PDF)
+  Generated fig4_per_token_ddr5_latency (PNG & PDF)
+  Generated fig5_compute_vs_memory_overlap (PNG & PDF)
+[SUCCESS] All figures successfully generated.
+

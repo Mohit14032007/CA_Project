@@ -1,0 +1,5 @@
+Configuration,Total_MoE_Time,Expert_Operations,GPU_Expert_Time,Logic_Expert_Time,ET_AllReduce_Time
+gpu_baseline,87536373.48,1408,87536373.48,0,670324.48
+duplex,29311606.28,1408,29311606.28,0,670324.48
+duplex_pe,29311606.28,1408,29311606.28,0,670324.48
+duplex_pe_et,31176981.16,2176,31176981.16,0,1340648.96

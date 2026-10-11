@@ -1,0 +1,5 @@
+token_lag,token_transitions_count,mean_jaccard_similarity,std_jaccard_similarity,mean_overlap_size,std_overlap_size,null_expected_jaccard,null_expected_overlap,zero_overlap_fraction,one_overlap_fraction,two_plus_overlap_fraction
+1,228,0.0155,0.02816,0.2325,0.4224,0.01693,0.25,0.7675,0.2325,0.0
+2,171,0.01789,0.03585,0.2632,0.5139,0.01693,0.25,0.7661,0.2105,0.0234
+3,114,0.02341,0.04155,0.3421,0.5898,0.01693,0.25,0.7105,0.2456,0.0439
+4,57,0.01771,0.03253,0.2632,0.4785,0.01693,0.25,0.7544,0.2281,0.0175

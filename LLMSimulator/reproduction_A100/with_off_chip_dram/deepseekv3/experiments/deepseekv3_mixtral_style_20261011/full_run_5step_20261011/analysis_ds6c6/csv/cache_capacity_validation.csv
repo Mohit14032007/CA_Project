@@ -1,0 +1,5 @@
+check_name,parameter,configured_limit,observed_peak,margin_bytes,invariant_satisfied
+Maximum Capacity Bound,cache_capacity_bytes,"80,000,000,000 B (80.00 GB decimal / 74.51 GiB binary)","79,976,988,672 B (79.98 GB decimal / 74.48 GiB binary)",23011328,TRUE
+Working Set Saturation Event,saturation_event_index,N/A,Event 1358 (during Token 2048),0,TRUE
+Pre-Saturation Eviction Count,evictions_before_saturation,0,0,0,TRUE
+Post-Saturation Eviction Invariant,evictions_equal_excess_inserts,2205 inserts - 908 initial = 1297,1297 evictions,0,TRUE

@@ -1,0 +1,9 @@
+metric_category,metric_name,value,unit,derivation_type,primary_source_file,source_function_or_formula
+Execution Timing,simulated_device_latency,"8,713.53 ms",ms,Direct Simulation Output,csv/..._decode.csv,cluster->runIteration() / sum(latency)
+Memory Timing,simulated_ddr5_time,"8,601.93 ms",ms,Direct Simulation Trace,traces/expert_load.csv,sum(duration_ns) where weight_tensor=='all_weights' and action=='miss'
+Compute Timing,analytical_roofline_compute,0.6775 ms,ms,Analytical Roofline Bound,Calculation from ModelConfig,5 * 57 * (9 * 2 * 7168 * 2048 * 2) / 312 TFLOP/s
+Memory Volume,ddr5_bytes_transferred,"194,217,246,720 B",bytes,Direct Simulation Trace,traces/expert_load.csv,"count(cold_batches) * 88,080,384 bytes"
+Cache Behavior,cache_hits,"4,635",events,Direct Simulation Trace,traces/expert_cache.csv,count(action == 'HIT') in Device::is_expert_resident()
+Cache Behavior,cache_misses,"2,205",events,Direct Simulation Trace,traces/expert_cache.csv,count(action == 'MISS') in Device::is_expert_resident()
+Cache Behavior,cache_evictions,"1,297",events,Direct Simulation Trace,traces/expert_cache.csv,count(action == 'EVICT') in Device::mark_expert_resident()
+Routing Mechanism,routing_generator,std::mt19937(777),PRNG,Source Code Inspection,src/scheduler/scheduler.cpp:141,Scheduler::getRandomExpert(top_k)

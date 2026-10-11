@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "check": "inserts_match_offchip_batches",
+      "status": "PASS"
+    }
+  ]
+}

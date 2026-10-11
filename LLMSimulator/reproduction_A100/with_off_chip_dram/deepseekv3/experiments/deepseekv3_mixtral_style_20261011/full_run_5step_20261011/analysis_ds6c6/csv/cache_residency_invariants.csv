@@ -1,0 +1,7 @@
+invariant_id,mathematical_invariant,lhs_value,rhs_value,delta,status,notes
+INV_WEIGHT_SIZE,sizeof(W1) == sizeof(W2) == sizeof(W3),"29,360,128 B","29,360,128 B",0,VERIFIED,FP16: 7168 * 2048 * 2 bytes
+INV_EXPERT_SIZE,sizeof(Expert) == 3 * sizeof(Weight),"88,080,384 B","88,080,384 B",0,VERIFIED,Sum of W1_gate + W2_down + W3_up
+INV_LOOKUP_TOTAL,Lookups == Hits + Misses,"6,840","4,635 + 2,205 = 6,840",0,VERIFIED,All weight lookups accounted
+INV_INSERT_EQUALS_MISS,Inserts == Misses,"2,205","2,205",0,VERIFIED,Every cold miss triggers an insert
+INV_NET_RESIDENT_TENSORS,ResidentTensors == Inserts - Evictions,908,"2,205 - 1,297 = 908",0,VERIFIED,Exact tensor count retained in HBM
+INV_PEAK_BYTES,PeakBytes == ResidentTensors * WeightSize,"79,976,988,672 B","908 * 29,360,128 = 79,976,988,672 B",0,VERIFIED,Exact byte count match

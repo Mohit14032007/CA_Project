@@ -1,0 +1,42 @@
+======================================================================
+DS-5C-8: Staged DeepSeek-V3 Module-Graph & Multi-Layer Timing Validation
+======================================================================
+
+--- Phase A: Reconciliation of Mapper Capacity & Injectivity ---
+  DDR5 Configuration: 2 Channels, 2 Ranks, 4 BankGroups, 4 Banks, 64 Cols, 10485760 Rows, 64 B Granularity
+  Row Step Size: 262144 bytes (262,144 bytes)
+  Total Addressable Capacity: 2748779069440 bytes (~2.74878 TB / 2.5 TiB)
+  DeepSeek-V3 14,592 Routed Experts Footprint: 1285268963328 bytes (~1.285 TB)
+  Production GPU Mapper Max Row: 4902912 (Row Capacity Utilization: 46.758%)
+  Note on test_ddr5_mapping: addrToVecLOGIC places upper bank/rank above row, yielding row index 9125888.
+  Production GPU execution exclusively uses addrToVec, yielding row index 4902912.
+  Both row indices strictly satisfy row < 10,485,760 with 0% aliasing.
+
+======================================================================
+Starting Stage 1: 2 MoE Layers (Total Layers: 5)
+======================================================================
+[CONFIG] Architecture: HiddenDim=7168, RoutedExperts=256, TopK=8, DenseLayers=3, MoELayers=2
+Using synthesis trace
+[INIT] Model Graph instantiated successfully. Cluster ready.
+
+--- Pass 1: Cold Start Execution (Fetch all required routed experts from DDR5) ---
+  Pass 1 Completed.
+  Host Wall-Clock Runtime: 167.448 s
+  Simulated Off-Chip DDR5 Time: 62416433.125 ns (62.416 ms)
+  Resident Experts in Cache: 512, Resident Bytes: 45097156608 B
+
+--- Trace Inspection for Stage 1 (Pass 1) ---
+  expert_routing.csv: 17 lines
+  expert_load.csv:    129 lines
+  expert_cache.csv:   3841 lines
+  DDR5 Trace Lines Added: 0 (0.000 MB)
+
+--- Pass 2: Warm Replay Execution (Expect 100% HBM Cache Hits) ---
+[WATCHDOG] Wall-clock timeout of 300s reached! Terminating PID 5711.
+[END] Process ended after 304s with code 143 at Sat Oct 10 12:32:59 UTC 2026
+==================================================
+DS-5C-8R RETRY FINAL STATUS: TIMEOUT
+EXIT CODE: 143
+WALLCLOCK DURATION: 304s
+LOG FILE: eval/staged_retry_output.txt
+==================================================

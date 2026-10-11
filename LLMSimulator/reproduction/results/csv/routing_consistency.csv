@@ -1,0 +1,4 @@
+Comparison,Total_Compared,Identical,Different,Identical_Pct,Different_Pct
+gpu_baseline vs duplex,10240,10240,0,100.0,0.0
+gpu_baseline vs duplex_pe,10240,10240,0,100.0,0.0
+gpu_baseline vs duplex_pe_et,10240,10240,0,100.0,0.0

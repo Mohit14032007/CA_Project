@@ -1,0 +1,25 @@
+# B0 Configuration Manifest
+
+- **Configuration File**: `reproduction_A100/with_off_chip_dram/configs/b0_single_gpu_hbm.yaml`
+- **Parent Commit**: `419252761fbdb95b789778a02256d458a5537ec7`
+- **Model Parameters**: 
+  - Mixtral 47B
+  - hidden_dim = 4096
+  - num_layers = 32
+  - num_heads = 32
+  - num_kv_heads = 8
+  - max_seq_len = 32768
+  - intermediate_dim = 14336
+  - expert_intermediate_dim = 14336
+  - precision_byte = 2
+  - num_routed_expert = 8
+  - top_k = 2
+- **Hardware Parameters**: A100-class, 312 TFLOPS
+- **Number of Devices**: 1 (`system.num_device: 1`)
+- **Processor Type**: GPU (`system.processor_type: GPU`)
+- **PE**: Disabled (`system.optimization.parallel_execution: off`)
+- **ET**: 1 (`system.distribution.expert_tensor_degree: 1`)
+- **Logic-PIM**: Disabled (implicit by `processor_type: GPU`)
+- **Workload**: Synthesis trace (debug), input_len=32, output_len=2, iter=2, max_batch_size=1
+- **HBM Configuration**: 80 GB, 2.039 TB/s bandwidth
+- **Memory System**: Single Ramulator backend (`system.optimization.use_ramulator: on`)

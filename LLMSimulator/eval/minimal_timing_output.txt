@@ -1,0 +1,17 @@
+Creating SystemConfig...
+Creating Device...
+Device created.
+Starting Minimal DDR5 Timing Test
+Creating w1
+Creating w2
+Creating w3
+Created tensors
+Issuing OFFCHIP_DRAM Ramulator Batch...
+Total Memory Duration: 3.90034e+06 ns (or simulated time units)
+Per request durations:
+  Tensor 0: 1.3e+06
+  Tensor 1: 2.6004e+06
+  Tensor 2: 3.90034e+06
+Issuing OFFCHIP_DRAM Ramulator Batch Again to verify execution cache bypass...
+Cache bypass verified (produced identical simulated duration: 3.90102e+06)
+Minimal Timing Test Passed.

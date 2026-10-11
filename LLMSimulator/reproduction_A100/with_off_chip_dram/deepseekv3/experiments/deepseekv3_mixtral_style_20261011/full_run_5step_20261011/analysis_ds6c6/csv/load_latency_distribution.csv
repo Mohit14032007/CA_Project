@@ -1,0 +1,14 @@
+statistic,value_ns,value_ms,description
+min,3900400.0,3.9004,min quantile of batch load duration
+p1,3900500.0,3.9005,p1 quantile of batch load duration
+p5,3900620.0,3.90062,p5 quantile of batch load duration
+p10,3900694.0,3.90069,p10 quantile of batch load duration
+p25,3900920.0,3.90092,p25 quantile of batch load duration
+median_p50,3901130.0,3.90113,median_p50 quantile of batch load duration
+p75,3901230.0,3.90123,p75 quantile of batch load duration
+p90,3901540.0,3.90154,p90 quantile of batch load duration
+p95,3901610.0,3.90161,p95 quantile of batch load duration
+p99,3901720.0,3.90172,p99 quantile of batch load duration
+max,3901840.0,3.90184,max quantile of batch load duration
+mean,3901102.3,3.9011,Arithmetic mean batch load duration
+std,284.8,0.00028,Standard deviation of batch load duration

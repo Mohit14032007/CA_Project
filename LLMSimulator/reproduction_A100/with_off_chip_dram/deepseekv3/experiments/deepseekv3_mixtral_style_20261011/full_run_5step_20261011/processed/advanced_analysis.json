@@ -1,0 +1,19 @@
+{
+  "temporal_routing": {
+    "total_tokens": 5,
+    "tokens": [
+      2048,
+      2049,
+      2050,
+      2051,
+      2052
+    ],
+    "mean_adjacent_token_jaccard": 0.019880952380952378
+  },
+  "cache_analysis": {
+    "total_evictions": 1297,
+    "evicted_experts_count": 255,
+    "peak_resident_bytes": 79976988672,
+    "final_resident_bytes": 79976988672
+  }
+}

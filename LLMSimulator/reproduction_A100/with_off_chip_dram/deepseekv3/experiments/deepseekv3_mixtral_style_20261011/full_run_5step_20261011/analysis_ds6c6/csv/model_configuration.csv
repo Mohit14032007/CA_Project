@@ -1,0 +1,13 @@
+parameter_name,parameter_value,description,config_path,verification_source
+model_name,deepseekV3,Configured model identity,configs/deepseekv3_b1_pilot_1step.yaml,ModelConfig::model_name
+num_layers,60,Total transformer layers in model,configs/deepseekv3_b1_pilot_1step.yaml,ModelConfig::num_layers
+dense_layers,3,Leading dense attention layers (Layers 1-3),configs/deepseekv3_b1_pilot_1step.yaml,ModelConfig::first_k_dense_replace
+moe_layers,57,Trailing Mixture-of-Experts layers (Layers 4-60),configs/deepseekv3_b1_pilot_1step.yaml,60 - 3
+num_routed_experts,256,Routed expert candidate pool per MoE layer,configs/deepseekv3_b1_pilot_1step.yaml,ModelConfig::num_routed_expert
+top_k,8,Selected experts per token per MoE layer,configs/deepseekv3_b1_pilot_1step.yaml,ModelConfig::top_k
+shared_experts,1,Always-active shared expert per MoE layer,configs/deepseekv3_b1_pilot_1step.yaml,ModelConfig::n_shared_experts
+hidden_dimension,7168,Transformer hidden feature dimension,configs/deepseekv3_b1_pilot_1step.yaml,ModelConfig::hidden_dim
+moe_intermediate_dimension,2048,Expert FFN intermediate hidden dimension,configs/deepseekv3_b1_pilot_1step.yaml,ModelConfig::moe_intermediate_dim
+weight_precision_bytes,2,FP16 / BF16 numerical representation (2 bytes/param),configs/deepseekv3_b1_pilot_1step.yaml,ModelConfig::precision_byte
+single_weight_tensor_bytes,29360128,Bytes per weight projection (7168 * 2048 * 2),Calculated,sizeof(W1_gate) = 29.36 MB
+full_expert_bytes,88080384,Bytes for complete expert (W1 + W2 + W3),Calculated,"3 * 29,360,128 = 88.08 MB"

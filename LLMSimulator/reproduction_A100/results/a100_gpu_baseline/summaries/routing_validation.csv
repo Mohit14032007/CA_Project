@@ -1,0 +1,2 @@
+config,actual,expected,valid_layers,valid_experts,valid_topk,exact_two
+a100_gpu_baseline,10240,10240,True,True,True,True

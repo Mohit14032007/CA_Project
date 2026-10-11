@@ -1,0 +1,6 @@
+token_id,step_index,total_selections,unique_experts,cold_expert_lookups,warm_expert_lookups,lookup_hit_rate_pct
+2048,1,456,213,456,912,66.67
+2049,2,456,216,442,926,67.69
+2050,3,456,213,439,929,67.91
+2051,4,456,214,429,939,68.64
+2052,5,456,216,439,929,67.91

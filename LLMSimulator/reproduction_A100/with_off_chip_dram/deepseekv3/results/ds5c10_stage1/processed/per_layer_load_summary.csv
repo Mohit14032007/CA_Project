@@ -1,0 +1,5 @@
+layer_id,cache_hit_or_miss,batch_count,total_bytes,total_duration_ns
+1,hit,40,1174405120,0.0
+1,miss,8,704643072,31207830.0
+2,hit,40,1174405120,0.0
+2,miss,8,704643072,31208620.0

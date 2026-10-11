@@ -1,0 +1,22 @@
+metric_name,value,unit,description,status
+simulated_workload,deepseekv3_mixtral_style,string,Sequential autoregressive decoding workload,VERIFIED
+model_architecture,DeepSeek-V3 671B shaped,string,"60 layers (3 dense, 57 MoE), 256 routed experts + 1 shared",VERIFIED
+total_decoding_steps,5,steps,Autoregressive generation steps executed,VERIFIED
+token_ids,"2048,2049,2050,2051,2052",tokens,Token sequence identifiers,VERIFIED
+batch_size,1,batch,Batch size for decoding,VERIFIED
+total_routed_selections,2280,selections,Total expert routing decisions (5 tokens * 57 stages * 8 top-k),VERIFIED
+total_cold_batches,2205,batches,Total expert weight batches loaded from DDR5,VERIFIED
+ddr5_transferred_bytes,194217246720,bytes,Total weight data transferred from off-chip DDR5 (194.22 GB / 180.88 GiB),VERIFIED
+cache_hit_count,4635,events,Total weight tensor accesses served by LRU cache,VERIFIED
+cache_miss_count,2205,events,Total weight tensor accesses triggering off-chip fetch,VERIFIED
+cache_insert_count,2205,events,Total weight insertions into cache,VERIFIED
+cache_evict_count,1297,events,Total weight evictions from cache,VERIFIED
+cache_capacity_bytes,80000000000,bytes,Configured expert cache capacity limit (80 GB),VERIFIED
+peak_cache_residency_bytes,79976988672,bytes,Peak resident weight bytes (908 tensors = 302 experts + 2 tensors),VERIFIED
+simulated_ddr5_time_ms,8601.93,ms,Total simulated off-chip DDR5 transfer time,VERIFIED
+simulated_device_latency_ms,8713.53,ms,Total simulated device execution latency,VERIFIED
+simulated_internal_compute_ms,111.60,ms,Simulated device latency minus DDR5 transfer time,VERIFIED
+analytical_roofline_compute_ms,0.6775,ms,Analytical peak FP16 compute time on NVIDIA A100 (312 TFLOP/s),VERIFIED
+ddr5_to_roofline_disparity_ratio,12695.8,ratio,Simulated DDR5 transfer time / analytical peak compute,VERIFIED
+host_wall_runtime_s,21159.21,seconds,Host execution wall time (~5.88 hours),VERIFIED
+host_process_exit_code,0,code,Simulator exit code,VERIFIED

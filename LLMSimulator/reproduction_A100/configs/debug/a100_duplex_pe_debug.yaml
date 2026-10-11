@@ -1,0 +1,44 @@
+model:
+  model_name: mixtral
+system:
+  gpu_gen: A100
+  nvlink_gen: 3
+  infiniband_gen: 800
+  num_node: 1
+  num_device: 4
+  processor_type: GPU+LOGIC
+  distribution:
+    none_expert_tensor_degree: 4
+    expert_tensor_degree: 1
+  optimization:
+    parallel_execution: true
+    hetero_subbatch: false
+    disagg_system: false
+    use_low_unit_moe_only: false
+    use_ramulator: false
+    compressed_kv: true
+    use_absorb: true
+    use_flash_mla: true
+    use_flash_attention: true
+    reuse_kv_cache: true
+    kv_cache_reuse_rate: 0.0
+    prefill_mode: false
+    decode_mode: true
+serving:
+  max_batch_size: 4
+  max_process_token: 0
+simulation:
+  data: synthesis
+  input_len: 2048
+  output_len: 128
+  precision_byte: 2
+  skewness: 0.0
+  iter: 3
+  injection_rate: 0
+  exit_out_of_memory: false
+  mem_cap_limit: false
+log:
+  print_log: true
+  export_gantt: true
+  output_directory: reproduction_A100/results/debug/a100_duplex_pe_debug/csv/
+  gantt_directory: reproduction_A100/results/debug/a100_duplex_pe_debug/raw/

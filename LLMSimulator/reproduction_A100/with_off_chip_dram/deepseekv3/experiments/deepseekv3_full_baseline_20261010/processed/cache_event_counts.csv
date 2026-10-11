@@ -1,0 +1,5 @@
+action,count,description
+MISS,456,Cold expert initial probe miss
+INSERT,456,Expert weight batch residency marking on DDR5 load complete
+HIT,2280,Sister weight hit in Pass 1 (912) and warm replay hit in Pass 2 (1368)
+EVICT,0,"Cache capacity eviction (0 evictions, footprint 40.16GB < 80GB budget)"

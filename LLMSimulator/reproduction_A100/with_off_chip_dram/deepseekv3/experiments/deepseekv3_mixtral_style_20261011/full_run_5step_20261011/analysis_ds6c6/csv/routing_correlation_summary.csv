@@ -1,0 +1,7 @@
+metric,observed_temporal_by_stage,observed_temporal_by_recorded_layer,observed_spatial,analytical_hypergeometric_null,conclusion
+Sample Transitions Analyzed,228,216,280,Infinite,Exploratory sample (5 tokens)
+Mean Intersection Size,0.2325,0.3241,0.2643,0.2500,Matches null model within sample variance
+Mean Jaccard Similarity,0.0155,0.0221,0.0176,0.0169,Statistically indistinguishable from uniform white noise
+Zero-Overlap Fraction (k=0),76.75%,70.37%,73.93%,77.08%,Predominantly disjoint sets
+Single-Overlap Fraction (k=1),23.25%,26.85%,25.71%,20.89%,Accidental collisions
+Multi-Overlap Fraction (k>=2),0.00%,2.78%,0.36%,2.02%,Zero clustering

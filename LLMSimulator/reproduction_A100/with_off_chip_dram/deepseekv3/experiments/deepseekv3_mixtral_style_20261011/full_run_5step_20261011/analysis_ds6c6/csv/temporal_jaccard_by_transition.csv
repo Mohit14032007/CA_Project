@@ -1,0 +1,5 @@
+transition_id,token_from,token_to,mean_jaccard,std_jaccard,mean_intersection_size,zero_overlap_fraction,one_overlap_fraction,two_plus_overlap_fraction
+2048->2049,2048,2049,0.01053,0.02431,0.1579,0.8421,0.1579,0.0
+2049->2050,2049,2050,0.01871,0.02996,0.2807,0.7193,0.2807,0.0
+2050->2051,2050,2051,0.01404,0.02718,0.2105,0.7895,0.2105,0.0
+2051->2052,2051,2052,0.01871,0.02996,0.2807,0.7193,0.2807,0.0

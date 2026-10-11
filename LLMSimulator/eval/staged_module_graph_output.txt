@@ -1,0 +1,22 @@
+======================================================================
+DS-5C-8: Staged DeepSeek-V3 Module-Graph & Multi-Layer Timing Validation
+======================================================================
+
+--- Phase A: Reconciliation of Mapper Capacity & Injectivity ---
+  DDR5 Configuration: 2 Channels, 2 Ranks, 4 BankGroups, 4 Banks, 64 Cols, 10485760 Rows, 64 B Granularity
+  Row Step Size: 262144 bytes (262,144 bytes)
+  Total Addressable Capacity: 2748779069440 bytes (~2.74878 TB / 2.5 TiB)
+  DeepSeek-V3 14,592 Routed Experts Footprint: 1285268963328 bytes (~1.285 TB)
+  Production GPU Mapper Max Row: 4902912 (Row Capacity Utilization: 46.758%)
+  Note on test_ddr5_mapping: addrToVecLOGIC places upper bank/rank above row, yielding row index 9125888.
+  Production GPU execution exclusively uses addrToVec, yielding row index 4902912.
+  Both row indices strictly satisfy row < 10,485,760 with 0% aliasing.
+
+======================================================================
+Starting Stage 1: 2 MoE Layers (Total Layers: 5)
+======================================================================
+[CONFIG] Architecture: HiddenDim=7168, RoutedExperts=256, TopK=8, DenseLayers=3, MoELayers=2
+Using synthesis trace
+[INIT] Model Graph instantiated successfully. Cluster ready.
+
+--- Pass 1: Cold Start Execution (Fetch all required routed experts from DDR5) ---

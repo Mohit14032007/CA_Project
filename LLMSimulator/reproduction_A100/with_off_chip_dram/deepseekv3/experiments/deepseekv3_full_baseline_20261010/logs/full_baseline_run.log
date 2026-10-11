@@ -1,0 +1,121 @@
+======================================================================
+DS-5C-11: Launching DeepSeek-V3 Full Baseline
+Executable: ./build/test_deepseekv3_full_baseline
+Output Raw Dir: /home/mohman/ca_project/LLMSimulator/reproduction_A100/with_off_chip_dram/deepseekv3/experiments/deepseekv3_full_baseline_20261010/raw
+Start Time (UTC): 2026-10-10T14:28:11Z
+======================================================================
+[INFO] Simulator running under PID: 38105
+======================================================================
+DS-5C-10: DeepSeek-V3 Full-Model Memory-System Baseline Execution
+======================================================================
+  DDR5 Configuration: 2 Channels, 2 Ranks, 4 BankGroups, 4 Banks, 64 Cols, 10485760 Rows, 64 B Granularity
+  Row Step Size: 262144 bytes (262,144 bytes)
+  Total Addressable Capacity: 2748779069440 bytes (~2.74878 TB / 2.5 TiB)
+  DeepSeek-V3 14,592 Routed Experts Footprint: 1285268963328 bytes (~1.285 TB)
+  Production GPU Mapper Max Row: 4902912 (Row Capacity Utilization: 46.758%)
+[CONFIG] Architecture: HiddenDim=7168, RoutedExperts=256, TopK=8, DenseLayers=3, MoELayers=57, ExpectedColdExperts=456 (40164655104 B / 37.406 GB)
+Using synthesis trace
+[INIT] Model Graph instantiated successfully. Cluster ready.
+
+--- Pass 1: Cold Start Execution (Fetch all required routed experts from DDR5) ---
+[PROGRESS] Elapsed: 60s / 7200s | RAM: 5795MB | RSS: 512832KB | Routing: 9 | Load: 41 | Cache: 22
+[PROGRESS] Elapsed: 120s / 7200s | RAM: 5689MB | RSS: 525244KB | Routing: 17 | Load: 97 | Cache: 50
+[PROGRESS] Elapsed: 180s / 7200s | RAM: 5657MB | RSS: 530388KB | Routing: 25 | Load: 145 | Cache: 74
+[PROGRESS] Elapsed: 240s / 7200s | RAM: 5615MB | RSS: 540736KB | Routing: 33 | Load: 193 | Cache: 98
+[PROGRESS] Elapsed: 300s / 7200s | RAM: 5698MB | RSS: 546560KB | Routing: 33 | Load: 241 | Cache: 122
+[PROGRESS] Elapsed: 360s / 7200s | RAM: 5684MB | RSS: 554668KB | Routing: 41 | Load: 297 | Cache: 150
+[PROGRESS] Elapsed: 420s / 7200s | RAM: 5836MB | RSS: 558944KB | Routing: 49 | Load: 345 | Cache: 174
+[PROGRESS] Elapsed: 481s / 7200s | RAM: 5700MB | RSS: 567052KB | Routing: 57 | Load: 393 | Cache: 198
+[PROGRESS] Elapsed: 541s / 7200s | RAM: 5684MB | RSS: 575512KB | Routing: 57 | Load: 441 | Cache: 222
+[PROGRESS] Elapsed: 601s / 7200s | RAM: 5684MB | RSS: 583804KB | Routing: 65 | Load: 497 | Cache: 250
+[PROGRESS] Elapsed: 661s / 7200s | RAM: 5705MB | RSS: 591656KB | Routing: 73 | Load: 545 | Cache: 274
+[PROGRESS] Elapsed: 721s / 7200s | RAM: 5571MB | RSS: 600344KB | Routing: 81 | Load: 593 | Cache: 298
+[PROGRESS] Elapsed: 781s / 7200s | RAM: 5651MB | RSS: 605848KB | Routing: 89 | Load: 641 | Cache: 322
+[PROGRESS] Elapsed: 841s / 7200s | RAM: 5562MB | RSS: 612324KB | Routing: 89 | Load: 689 | Cache: 346
+[PROGRESS] Elapsed: 901s / 7200s | RAM: 5555MB | RSS: 620428KB | Routing: 97 | Load: 737 | Cache: 370
+[PROGRESS] Elapsed: 962s / 7200s | RAM: 5551MB | RSS: 627344KB | Routing: 105 | Load: 793 | Cache: 398
+[PROGRESS] Elapsed: 1022s / 7200s | RAM: 5605MB | RSS: 637040KB | Routing: 113 | Load: 841 | Cache: 422
+[PROGRESS] Elapsed: 1082s / 7200s | RAM: 5601MB | RSS: 643372KB | Routing: 113 | Load: 889 | Cache: 446
+[PROGRESS] Elapsed: 1142s / 7200s | RAM: 5686MB | RSS: 652492KB | Routing: 121 | Load: 945 | Cache: 474
+[PROGRESS] Elapsed: 1202s / 7200s | RAM: 5694MB | RSS: 657416KB | Routing: 129 | Load: 993 | Cache: 498
+[PROGRESS] Elapsed: 1262s / 7200s | RAM: 5717MB | RSS: 667044KB | Routing: 137 | Load: 1041 | Cache: 522
+[PROGRESS] Elapsed: 1322s / 7200s | RAM: 5715MB | RSS: 673092KB | Routing: 145 | Load: 1097 | Cache: 550
+[PROGRESS] Elapsed: 1382s / 7200s | RAM: 5709MB | RSS: 681120KB | Routing: 145 | Load: 1145 | Cache: 574
+[PROGRESS] Elapsed: 1443s / 7200s | RAM: 5507MB | RSS: 689588KB | Routing: 153 | Load: 1193 | Cache: 598
+[PROGRESS] Elapsed: 1503s / 7200s | RAM: 5549MB | RSS: 699648KB | Routing: 161 | Load: 1249 | Cache: 626
+[PROGRESS] Elapsed: 1563s / 7200s | RAM: 5512MB | RSS: 702660KB | Routing: 169 | Load: 1297 | Cache: 650
+[PROGRESS] Elapsed: 1623s / 7200s | RAM: 5504MB | RSS: 712716KB | Routing: 177 | Load: 1345 | Cache: 674
+[PROGRESS] Elapsed: 1683s / 7200s | RAM: 5565MB | RSS: 719916KB | Routing: 177 | Load: 1401 | Cache: 702
+[PROGRESS] Elapsed: 1743s / 7200s | RAM: 5534MB | RSS: 729468KB | Routing: 185 | Load: 1449 | Cache: 726
+[PROGRESS] Elapsed: 1803s / 7200s | RAM: 5455MB | RSS: 733524KB | Routing: 193 | Load: 1497 | Cache: 750
+[PROGRESS] Elapsed: 1863s / 7200s | RAM: 5443MB | RSS: 742136KB | Routing: 201 | Load: 1545 | Cache: 774
+[PROGRESS] Elapsed: 1924s / 7200s | RAM: 5487MB | RSS: 750356KB | Routing: 209 | Load: 1601 | Cache: 802
+[PROGRESS] Elapsed: 1984s / 7200s | RAM: 5502MB | RSS: 756688KB | Routing: 209 | Load: 1649 | Cache: 826
+[PROGRESS] Elapsed: 2044s / 7200s | RAM: 5479MB | RSS: 765080KB | Routing: 217 | Load: 1697 | Cache: 850
+[PROGRESS] Elapsed: 2104s / 7200s | RAM: 5431MB | RSS: 773368KB | Routing: 225 | Load: 1753 | Cache: 878
+[PROGRESS] Elapsed: 2164s / 7200s | RAM: 5420MB | RSS: 782848KB | Routing: 233 | Load: 1801 | Cache: 902
+[PROGRESS] Elapsed: 2224s / 7200s | RAM: 5426MB | RSS: 787480KB | Routing: 233 | Load: 1849 | Cache: 926
+[PROGRESS] Elapsed: 2284s / 7200s | RAM: 5514MB | RSS: 794468KB | Routing: 241 | Load: 1897 | Cache: 950
+[PROGRESS] Elapsed: 2344s / 7200s | RAM: 5366MB | RSS: 805612KB | Routing: 249 | Load: 1945 | Cache: 974
+[PROGRESS] Elapsed: 2404s / 7200s | RAM: 5445MB | RSS: 809124KB | Routing: 257 | Load: 1993 | Cache: 998
+[PROGRESS] Elapsed: 2465s / 7200s | RAM: 5408MB | RSS: 816360KB | Routing: 257 | Load: 2045 | Cache: 1023
+[PROGRESS] Elapsed: 2525s / 7200s | RAM: 5390MB | RSS: 825264KB | Routing: 265 | Load: 2097 | Cache: 1050
+[PROGRESS] Elapsed: 2585s / 7200s | RAM: 5392MB | RSS: 833664KB | Routing: 273 | Load: 2145 | Cache: 1074
+[PROGRESS] Elapsed: 2645s / 7200s | RAM: 5501MB | RSS: 841880KB | Routing: 281 | Load: 2193 | Cache: 1098
+[PROGRESS] Elapsed: 2705s / 7200s | RAM: 5494MB | RSS: 850236KB | Routing: 289 | Load: 2249 | Cache: 1126
+[PROGRESS] Elapsed: 2765s / 7200s | RAM: 5525MB | RSS: 855956KB | Routing: 289 | Load: 2297 | Cache: 1150
+[PROGRESS] Elapsed: 2825s / 7200s | RAM: 5528MB | RSS: 863264KB | Routing: 297 | Load: 2345 | Cache: 1174
+[PROGRESS] Elapsed: 2885s / 7200s | RAM: 5510MB | RSS: 872208KB | Routing: 305 | Load: 2401 | Cache: 1202
+[PROGRESS] Elapsed: 2946s / 7200s | RAM: 5511MB | RSS: 877240KB | Routing: 313 | Load: 2449 | Cache: 1226
+[PROGRESS] Elapsed: 3006s / 7200s | RAM: 5500MB | RSS: 886644KB | Routing: 321 | Load: 2497 | Cache: 1250
+[PROGRESS] Elapsed: 3066s / 7200s | RAM: 5483MB | RSS: 894204KB | Routing: 321 | Load: 2553 | Cache: 1278
+[PROGRESS] Elapsed: 3126s / 7200s | RAM: 5490MB | RSS: 899892KB | Routing: 329 | Load: 2601 | Cache: 1302
+[PROGRESS] Elapsed: 3186s / 7200s | RAM: 5482MB | RSS: 908720KB | Routing: 337 | Load: 2649 | Cache: 1326
+[PROGRESS] Elapsed: 3246s / 7200s | RAM: 5337MB | RSS: 915564KB | Routing: 345 | Load: 2705 | Cache: 1354
+[PROGRESS] Elapsed: 3306s / 7200s | RAM: 5330MB | RSS: 922108KB | Routing: 353 | Load: 2753 | Cache: 1378
+[PROGRESS] Elapsed: 3366s / 7200s | RAM: 5305MB | RSS: 931232KB | Routing: 353 | Load: 2801 | Cache: 1402
+[PROGRESS] Elapsed: 3427s / 7200s | RAM: 5259MB | RSS: 939120KB | Routing: 361 | Load: 2841 | Cache: 1422
+[PROGRESS] Elapsed: 3487s / 7200s | RAM: 5345MB | RSS: 946936KB | Routing: 369 | Load: 2889 | Cache: 1446
+[PROGRESS] Elapsed: 3547s / 7200s | RAM: 5296MB | RSS: 952400KB | Routing: 369 | Load: 2937 | Cache: 1470
+[PROGRESS] Elapsed: 3607s / 7200s | RAM: 5291MB | RSS: 955120KB | Routing: 377 | Load: 2985 | Cache: 1494
+[PROGRESS] Elapsed: 3667s / 7200s | RAM: 5278MB | RSS: 968252KB | Routing: 385 | Load: 3033 | Cache: 1518
+[PROGRESS] Elapsed: 3727s / 7200s | RAM: 5304MB | RSS: 975380KB | Routing: 393 | Load: 3081 | Cache: 1542
+[PROGRESS] Elapsed: 3787s / 7200s | RAM: 5219MB | RSS: 980664KB | Routing: 393 | Load: 3129 | Cache: 1566
+[PROGRESS] Elapsed: 3848s / 7200s | RAM: 5193MB | RSS: 988592KB | Routing: 401 | Load: 3177 | Cache: 1590
+[PROGRESS] Elapsed: 3908s / 7200s | RAM: 5179MB | RSS: 994924KB | Routing: 409 | Load: 3225 | Cache: 1614
+[PROGRESS] Elapsed: 3968s / 7200s | RAM: 5169MB | RSS: 1002816KB | Routing: 417 | Load: 3273 | Cache: 1638
+[PROGRESS] Elapsed: 4028s / 7200s | RAM: 5313MB | RSS: 1009832KB | Routing: 417 | Load: 3321 | Cache: 1662
+[PROGRESS] Elapsed: 4088s / 7200s | RAM: 5220MB | RSS: 1014576KB | Routing: 425 | Load: 3369 | Cache: 1686
+[PROGRESS] Elapsed: 4148s / 7200s | RAM: 5252MB | RSS: 1025360KB | Routing: 433 | Load: 3417 | Cache: 1710
+[PROGRESS] Elapsed: 4208s / 7200s | RAM: 5254MB | RSS: 1031516KB | Routing: 441 | Load: 3465 | Cache: 1734
+[PROGRESS] Elapsed: 4268s / 7200s | RAM: 5247MB | RSS: 1036472KB | Routing: 441 | Load: 3513 | Cache: 1758
+[PROGRESS] Elapsed: 4329s / 7200s | RAM: 5340MB | RSS: 1043564KB | Routing: 449 | Load: 3561 | Cache: 1782
+[PROGRESS] Elapsed: 4389s / 7200s | RAM: 5155MB | RSS: 1053588KB | Routing: 457 | Load: 3609 | Cache: 1806
+  Pass 1 Completed.
+  Host Wall-Clock Runtime: 4431.961 s
+  Simulated Off-Chip DDR5 Time: 1778905300.000 ns (1778.905 ms)
+  Resident Experts in Cache: 456, Resident Bytes: 40164655104 B
+
+--- Trace Inspection for DeepSeek-V3 Full Baseline (Pass 1) ---
+  expert_routing.csv: 457 lines
+  expert_load.csv:    3649 lines
+  expert_cache.csv:   1825 lines
+  DDR5 Trace Lines Added: 0 (0.000 MB)
+
+--- Pass 2: Warm Replay Execution (Expect 100% HBM Cache Hits) ---
+  Pass 2 Completed.
+  Host Wall-Clock Runtime: 3.248 s
+  DDR5 Clock Delta on Replay: 0.000 ns (0 ns expected)
+  HBM Clock Delta on Replay:  0.000 ns
+  -> SUCCESS: All experts hit the HBM cache on replay! Zero DDR5 latency incurred.
+
+DeepSeek-V3 Full Baseline Completed in 4436.086 seconds.
+  Completion status written to /home/mohman/ca_project/LLMSimulator/reproduction_A100/with_off_chip_dram/deepseekv3/experiments/deepseekv3_full_baseline_20261010/raw/ds5c10_completion_status.txt
+
+======================================================================
+SUCCESS: DeepSeek-V3 Full Baseline Run Complete!
+======================================================================
+======================================================================
+Process ended after 4439s with code 0 at 2026-10-10T15:42:10Z
+DS-5C-11 FULL BASELINE STATUS: SUCCESS (NORMAL)
+======================================================================

@@ -1,0 +1,63 @@
+{
+  "status": {
+    "STATUS": "SUCCESS",
+    "EXIT_CODE": "0",
+    "STAGE": "Stage 1",
+    "MOE_LAYERS": "2",
+    "TOTAL_LAYERS": "5",
+    "HOST_WALLCLOCK_SECONDS": "164.3173",
+    "PASS1_HOST_SECONDS": "164.1444",
+    "PASS1_SIMULATED_DDR5_NS": "62416433",
+    "PASS1_SIMULATED_DDR5_MS": "62.4164",
+    "PASS2_HOST_SECONDS": "0.0118",
+    "PASS2_DDR5_DELTA_NS": "0",
+    "PASS2_HBM_DELTA_NS": "0",
+    "RESIDENT_EXPERTS_COUNT": "16",
+    "RESIDENT_BYTES": "1409286144",
+    "ROUTING_RECORDS_COUNT": "17",
+    "LOAD_RECORDS_COUNT": "129",
+    "CACHE_RECORDS_COUNT": "65"
+  },
+  "routing": {
+    "total_routing_events": 32,
+    "unique_experts_routed": 16,
+    "layers_routed": [
+      0,
+      1
+    ],
+    "tokens_routed": [
+      1
+    ]
+  },
+  "load": {
+    "total_load_rows": 224,
+    "unique_request_ids": 96,
+    "tensor_request_rows": 128,
+    "aggregate_rows": 96,
+    "offchip_ddr5_batches": 16,
+    "hbm_hit_batches": 80,
+    "total_offchip_bytes": 1409286144,
+    "total_simulated_ddr5_duration_ns": 62416450.0,
+    "total_simulated_ddr5_duration_ms": 62.41645,
+    "duration_stats_ns": {
+      "count": 16.0,
+      "mean": 3901028.125,
+      "std": 311.49571960676013,
+      "min": 3900450.0,
+      "25%": 3900870.0,
+      "50%": 3901005.0,
+      "75%": 3901220.0,
+      "max": 3901540.0
+    }
+  },
+  "cache": {
+    "total_cache_events": 112,
+    "actions": {
+      "HIT": 80,
+      "MISS": 16,
+      "INSERT": 16
+    },
+    "final_resident_bytes": 1409286144,
+    "peak_resident_bytes": 1409286144
+  }
+}

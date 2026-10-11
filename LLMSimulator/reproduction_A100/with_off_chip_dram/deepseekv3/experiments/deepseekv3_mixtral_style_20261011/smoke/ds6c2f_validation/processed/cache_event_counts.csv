@@ -1,0 +1,4 @@
+action,count
+HIT,64
+MISS,32
+INSERT,32

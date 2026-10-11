@@ -1,0 +1,8 @@
+parameter,gpu_baseline,duplex,duplex_pe,duplex_pe_et,classification
+processor_type,GPU,GPU+LOGIC,GPU+LOGIC,GPU+LOGIC,ARCHITECTURAL_CHANGE
+parallel_execution,off,off,on,on,PE_CHANGE
+expert_tensor_degree,1,1,1,4,ET_CHANGE
+none_expert_tensor_degree,4,4,4,4,COMMON
+model_name,Mixtral_47B,Mixtral_47B,Mixtral_47B,Mixtral_47B,COMMON
+batch_size,32,32,32,32,COMMON
+precision,FP16,FP16,FP16,FP16,COMMON

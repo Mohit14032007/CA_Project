@@ -1,0 +1,40 @@
+{
+  "routing": {
+    "total_routing_events": 32,
+    "unique_experts_routed": 32,
+    "layers_routed": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "tokens_routed": [
+      2048,
+      2049
+    ]
+  },
+  "load": {
+    "total_load_rows": 256,
+    "unique_request_ids": 96,
+    "aggregate_batches": 96,
+    "constituent_tensor_rows": 160,
+    "offchip_dram_records": 128,
+    "hbm_hit_records": 128,
+    "total_offchip_simulated_duration_ns": 124834790.0,
+    "total_offchip_bytes_loaded": 2818572288,
+    "mean_offchip_batch_duration_ns": 3901087.1875,
+    "std_offchip_batch_duration_ns": 303.67888786592306,
+    "min_offchip_batch_duration_ns": 3900450.0,
+    "max_offchip_batch_duration_ns": 3901680.0
+  },
+  "cache": {
+    "total_cache_events": 128,
+    "hits": 64,
+    "misses": 32,
+    "inserts": 32,
+    "evictions": 0,
+    "peak_resident_bytes": 2818572288,
+    "final_resident_bytes": 2818572288
+  },
+  "integrity": "PASS"
+}

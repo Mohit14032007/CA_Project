@@ -1,0 +1,80 @@
+{
+  "routing": {
+    "total_routing_events": 32,
+    "unique_experts_routed": 32,
+    "layers_routed": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "tokens_routed": [
+      2048,
+      2049
+    ]
+  },
+  "load": {
+    "total_load_rows": 256,
+    "unique_request_ids": 96,
+    "aggregate_batches": 96,
+    "constituent_tensor_rows": 160,
+    "offchip_dram_records": 128,
+    "hbm_hit_records": 128,
+    "total_offchip_simulated_duration_ns": 124834790.0,
+    "total_offchip_bytes_loaded": 2818572288,
+    "mean_offchip_batch_duration_ns": 3901087.1875,
+    "std_offchip_batch_duration_ns": 303.67888786592306,
+    "min_offchip_batch_duration_ns": 3900450.0,
+    "max_offchip_batch_duration_ns": 3901680.0
+  },
+  "cache": {
+    "total_cache_events": 128,
+    "hits": 64,
+    "misses": 32,
+    "inserts": 32,
+    "evictions": 0,
+    "peak_resident_bytes": 2818572288,
+    "final_resident_bytes": 2818572288
+  },
+  "simulation": {
+    "source_file": "deepseekV3_synthesis_2048_4_GPU_N1_D1_TP1_DP1_maxbatch1_maxprocess524288_iter2_skew0_precision_byte2_parallel_execution0_ramul_decode.csv",
+    "total_steps": 2,
+    "cumulative_device_time_ns": 128973000.0,
+    "mean_step_latency_ns": 64486650.0,
+    "q_down_proj_total_ns": 85346.0,
+    "kv_down_proj_total_ns": 25761.6,
+    "kr_proj_total_ns": 3746.16,
+    "q_up_proj_total_ns": 193253.6,
+    "qr_proj_total_ns": 99923.0,
+    "expert_ffn_total_ns": 125716300.0,
+    "layernorm_total_ns": 482.118,
+    "residual_total_ns": 421.854,
+    "rope_total_ns": 5308.33,
+    "total_energy_total_nj": 434276000.0,
+    "mac_energy_total_nj": 4000260.0,
+    "fc_dram_total_nj": 206300000.0,
+    "fc_comp_total_nj": 1634184.0,
+    "attn_dram_total_nj": 41591300.0,
+    "attn_comp_total_nj": 1633397.0,
+    "moe_dram_total_nj": 182384300.0,
+    "moe_comp_total_nj": 732682.0
+  },
+  "timing_reconciliation": {
+    "num_tokens_measured": 2,
+    "num_moe_layers": 4,
+    "top_k": 8,
+    "hidden_dim": 7168,
+    "expert_intermediate_dim": 2048,
+    "total_moe_flops": 5637144576,
+    "a100_dense_fp16_peak_tflops": 312.0,
+    "analytical_compute_time_ms": 0.01806777107692308,
+    "analytical_compute_time_us": 18.067771076923076,
+    "analytical_compute_time_per_token_us": 9.033885538461538,
+    "simulated_ddr5_time_ms": 124.83479,
+    "simulated_device_latency_ms": 128.973,
+    "simulated_internal_compute_comm_ms": 4.13821,
+    "simulated_hbm_time_ms": 0.0,
+    "host_wallclock_seconds": 343.0
+  },
+  "integrity": "PASS"
+}

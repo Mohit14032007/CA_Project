@@ -1,0 +1,5 @@
+configuration,moe_execution_time,gpu_xpu_expert_time,logic_pim_expert_time,pe_migration_information,et_communication,et_synchronization,expert_load_balance,device_load_balance
+gpu_baseline,6766635.990453,54769525.0,0,N/A,0.0,0.0,Statically assigned,Imbalanced due to routing
+duplex,2139961.126492,16976754.6,0,N/A,0.0,0.0,Statically assigned,Imbalanced due to routing
+duplex_pe,2139961.126492,16976754.6,0,0 experts migrated,0.0,0.0,Statically assigned,Imbalanced due to routing
+duplex_pe_et,1713983.465394,19349536.2,0,N/A,670324.48,670324.48,Perfectly balanced,Balanced via ET

@@ -1,0 +1,44 @@
+add_executable(run test.cpp)
+
+target_link_libraries(
+    run
+    PRIVATE llm_system
+)
+
+set_target_properties(run PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
+)
+add_executable(test_diag test_diag.cpp)
+target_link_libraries(test_diag PRIVATE llm_system)
+set_target_properties(test_diag PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+add_executable(ds5c2_timing_audit_test ds5c2_timing_audit_test.cpp)
+target_link_libraries(ds5c2_timing_audit_test PRIVATE llm_system)
+set_target_properties(ds5c2_timing_audit_test PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+add_executable(test_lru test_lru.cpp)
+target_link_libraries(test_lru PRIVATE llm_system)
+set_target_properties(test_lru PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+add_executable(test_ddr5_mapping test_ddr5_mapping.cpp)
+target_link_libraries(test_ddr5_mapping PRIVATE llm_system)
+set_target_properties(test_ddr5_mapping PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+add_executable(test_minimal_timing test_minimal_timing.cpp)
+target_link_libraries(test_minimal_timing PRIVATE llm_system)
+set_target_properties(test_minimal_timing PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+add_executable(test_multi_expert_timing test_multi_expert_timing.cpp)
+target_link_libraries(test_multi_expert_timing PRIVATE llm_system)
+set_target_properties(test_multi_expert_timing PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+add_executable(test_staged_module_graph test_staged_module_graph.cpp)
+target_link_libraries(test_staged_module_graph PRIVATE llm_system)
+set_target_properties(test_staged_module_graph PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+add_executable(test_production_ddr5_mapping test_production_ddr5_mapping.cpp)
+target_link_libraries(test_production_ddr5_mapping PRIVATE llm_system)
+set_target_properties(test_production_ddr5_mapping PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+add_executable(test_cache_residency_remediation test_cache_residency_remediation.cpp)
+target_link_libraries(test_cache_residency_remediation PRIVATE llm_system)
+set_target_properties(test_cache_residency_remediation PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+add_executable(test_deepseekv3_full_baseline test_deepseekv3_full_baseline.cpp)
+target_link_libraries(test_deepseekv3_full_baseline PRIVATE llm_system)
+set_target_properties(test_deepseekv3_full_baseline PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
+add_executable(run_deepseekv3_mixtral_style test_deepseekv3_mixtral_style.cpp)
+target_link_libraries(run_deepseekv3_mixtral_style PRIVATE llm_system)
+set_target_properties(run_deepseekv3_mixtral_style PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})

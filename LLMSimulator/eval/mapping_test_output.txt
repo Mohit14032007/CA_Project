@@ -1,0 +1,11 @@
+Testing DDR5 extended mapping (num_row = 10485760)
+Geometry: Channel=2, Rank=2, BG=4, Bank=4, Row=10485760, Col=64, Granul=64
+
+Zero Address: 0 -> [0, 0, 0, 0, 0, 0]
+Row 0 End Address: 4095 -> [1, 0, 3, 1, 0, 3]
+Row 1 Start Address: 4096 -> [0, 0, 0, 0, 0, 4]
+Expert 1 start Address: 4294967296 -> [0, 0, 0, 0, 65536, 0]
+Expert 2 start Address: 4383047680 -> [0, 0, 0, 0, 66880, 0]
+Highest Expert Address Address: 1285268963328 -> [0, 0, 0, 2, 9125888, 0]
+Highest Row Index: 9125888
+All mapping tests passed.

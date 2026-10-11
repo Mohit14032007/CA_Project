@@ -1,0 +1,34 @@
+======================================================================
+DS-6C-2: DeepSeek-V3 Mixtral-Style Experiment Harness
+Executable: run_deepseekv3_mixtral_style
+Config Path: reproduction_A100/with_off_chip_dram/deepseekv3/experiments/deepseekv3_mixtral_style_20261011/configs/deepseekv3_smoke_test.yaml
+======================================================================
+
+[TOPOLOGY & GEOMETRY VALIDATION]
+  Model: DeepSeek-V3 (5 layers: 3 dense, 2 MoE)
+  Experts: 256 routed, top-8, 1 shared
+  Expert Footprint: 88,080,384 bytes (~88.08 MB FP16)
+  Total Expert Inventory: 14,592 experts = 45097156608 bytes (~1.285 TB)
+  DDR5 Backing Capacity: 2748779069440 bytes (~2.75 TB / 2.5 TiB across 10,485,760 rows)
+  Max Production Row Index: 172032 (Row Utilization: 1.64% < 100%)
+  HBM Local Cache Budget: 80000000000 bytes (74.51 GB)
+  Trace Output Directory: reproduction_A100/with_off_chip_dram/deepseekv3/experiments/deepseekv3_mixtral_style_20261011/smoke/traces/
+  Summary CSV Directory: reproduction_A100/with_off_chip_dram/deepseekv3/experiments/deepseekv3_mixtral_style_20261011/smoke/csv/
+  Workload: input_len=2048, output_len=4, iter=2, batch_size=1
+Using synthesis trace
+
+[INITIALIZATION] Scheduler, Cluster, Device, and Model Graph created.
+
+--- Executing Controlled Sequential Decoding Loop (2 steps) ---
+  [Step 0] Token SeqLen=2048 | Host: 163.86s | Simulated DDR5: 62.42 ms | Resident Experts: 16 (1.31 GB)
+  [Step 1] Token SeqLen=2049 | Host: 160.12s | Simulated DDR5: 62.42 ms | Resident Experts: 32 (2.62 GB)
+
+======================================================================
+EXECUTION COMPLETE
+  Total Host Runtime: 323.98 seconds
+  Final Resident Experts: 32
+  Final Resident Memory:  2818572288 bytes (2.62 GB)
+  Routing Records: 33 lines
+  Load Records:    257 lines
+  Cache Records:   129 lines
+======================================================================

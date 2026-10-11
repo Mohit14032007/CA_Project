@@ -1,0 +1,137 @@
+======================================================================
+DS-5C-7: Controlled Multi-Expert Timing & Cache Validation
+======================================================================
+[INIT] Cluster and Device instantiated.
+[INIT] HBM Execution Cache initialized (entries: 0).
+[INIT] Expert LRU Capacity: 104857600 bytes (100 MB).
+
+----------------------------------------------------------------------
+Step 0: Expert 10 Cold Miss (Fetch from Off-Chip DDR5)
+----------------------------------------------------------------------
+  [LRU Decision] Expert 10 Resident: MISS (Expected: MISS)
+  [Requests Metadata]
+    Req 1: W1_E10 Addr=880803840 Size=29360128 B Target=OFFCHIP_DRAM
+    W1 Coordinates: [0, 0, 0, 0, 3360, 0] (Ch, Rk, BG, Ba, Ro, Co)
+    Req 2: W2_E10 Addr=910163968 Size=29360128 B Target=OFFCHIP_DRAM
+    W2 Coordinates: [0, 0, 0, 0, 3472, 0] (Ch, Rk, BG, Ba, Ro, Co)
+    Req 3: W3_E10 Addr=939524096 Size=29360128 B Target=OFFCHIP_DRAM
+    W3 Coordinates: [0, 0, 0, 0, 3584, 0] (Ch, Rk, BG, Ba, Ro, Co)
+  [Cache Bypass] ExecutionCache size unchanged (0). OFFCHIP_DRAM bypassed timing cache.
+  [Timing Analysis]
+    Simulated Start Time:      0.00 ns
+    Simulated Completion Time: 3900336.25 ns
+    Simulated Memory Duration: 3900336.25 ns
+    Ramulator Clock Delta:     3900336.25 ns
+    Per-Request Durations (Cumulative timestamps from batch start):
+      W1 completion latency: 1300002.50 ns
+      W2 completion latency: 2600401.88 ns
+      W3 completion latency: 3900336.25 ns
+  [LRU State] Expert 10 marked resident. Current resident bytes: 88080384 B (LRU entries: 1)
+  [Host Wall-Clock Runtime] Step 0: 11018.76 ms
+
+----------------------------------------------------------------------
+Step 1: Expert 10 Repeat Access (LRU Hit -> Resident in HBM)
+----------------------------------------------------------------------
+  [LRU Decision] Expert 10 Resident: HIT (Expected: HIT)
+  [Requests Metadata]
+    Req 4: W1_E10 Addr=176160768 Target=HBM (Cache Hit)
+    Req 5: W2_E10 Addr=205520896 Target=HBM (Cache Hit)
+    Req 6: W3_E10 Addr=234881024 Target=HBM (Cache Hit)
+  [Execution Cache State Before] Key present: NO
+  [Execution Cache State After] Key present: YES
+  [HBM Timing]
+    Batch Memory Duration: 33463.04 ns
+    HBM Clock Delta:       33463.04 ns
+    Execution Cache MISS verified: Simulated and cached into cluster execution_time_cache.
+  [Host Wall-Clock Runtime] Step 1: 301.70 ms
+
+----------------------------------------------------------------------
+Step 2: Expert 17 Cold Miss (Fetch from DDR5, Evict Expert 10)
+----------------------------------------------------------------------
+  [LRU Decision] Expert 17 Resident: MISS (Expected: MISS)
+  [Requests Metadata]
+    Req 7: W1_E17 Addr=1497366528 Size=29360128 B Target=OFFCHIP_DRAM
+    W1 Coordinates: [0, 0, 0, 0, 5712, 0] (Ch, Rk, BG, Ba, Ro, Co)
+    Req 8: W2_E17 Addr=1526726656 Size=29360128 B Target=OFFCHIP_DRAM
+    W2 Coordinates: [0, 0, 0, 0, 5824, 0] (Ch, Rk, BG, Ba, Ro, Co)
+    Req 9: W3_E17 Addr=1556086784 Size=29360128 B Target=OFFCHIP_DRAM
+    W3 Coordinates: [0, 0, 0, 0, 5936, 0] (Ch, Rk, BG, Ba, Ro, Co)
+  [Cache Bypass] ExecutionCache size unchanged (1). OFFCHIP_DRAM bypassed timing cache.
+  [Timing Analysis]
+    Simulated Start Time:      3900336.25 ns
+    Simulated Completion Time: 7801358.12 ns
+    Simulated Memory Duration: 3901021.88 ns
+    Ramulator Clock Delta:     3901021.88 ns
+    Per-Request Durations (Cumulative timestamps from batch start):
+      W1 completion latency: 1300330.62 ns
+      W2 completion latency: 2600822.50 ns
+      W3 completion latency: 3901021.88 ns
+  [LRU State] Expert 17 marked resident. Current resident bytes: 88080384 B (LRU entries: 1)
+  [Host Wall-Clock Runtime] Step 2: 10817.83 ms
+
+----------------------------------------------------------------------
+Step 3: Expert 10 Capacity Miss (Evicted earlier, Re-fetch DDR5)
+----------------------------------------------------------------------
+  [LRU Decision] Expert 10 Resident: MISS (Expected: MISS)
+  [Requests Metadata]
+    Req 10: W1_E10 Addr=880803840 Size=29360128 B Target=OFFCHIP_DRAM
+    W1 Coordinates: [0, 0, 0, 0, 3360, 0] (Ch, Rk, BG, Ba, Ro, Co)
+    Req 11: W2_E10 Addr=910163968 Size=29360128 B Target=OFFCHIP_DRAM
+    W2 Coordinates: [0, 0, 0, 0, 3472, 0] (Ch, Rk, BG, Ba, Ro, Co)
+    Req 12: W3_E10 Addr=939524096 Size=29360128 B Target=OFFCHIP_DRAM
+    W3 Coordinates: [0, 0, 0, 0, 3584, 0] (Ch, Rk, BG, Ba, Ro, Co)
+  [Cache Bypass] ExecutionCache size unchanged (1). OFFCHIP_DRAM bypassed timing cache.
+  [Timing Analysis]
+    Simulated Start Time:      7801358.12 ns
+    Simulated Completion Time: 11702510.62 ns
+    Simulated Memory Duration: 3901152.50 ns
+    Ramulator Clock Delta:     3901152.50 ns
+    Per-Request Durations (Cumulative timestamps from batch start):
+      W1 completion latency: 1300466.25 ns
+      W2 completion latency: 2600993.75 ns
+      W3 completion latency: 3901152.50 ns
+  [LRU State] Expert 10 marked resident. Current resident bytes: 88080384 B (LRU entries: 1)
+  [Host Wall-Clock Runtime] Step 3: 10920.43 ms
+
+----------------------------------------------------------------------
+Step 4: Expert 42 Cold Miss (Distinct region, Fetch DDR5, Evict E10)
+----------------------------------------------------------------------
+  [LRU Decision] Expert 42 Resident: MISS (Expected: MISS)
+  [Requests Metadata]
+    Req 13: W1_E42 Addr=3699376128 Size=29360128 B Target=OFFCHIP_DRAM
+    W1 Coordinates: [0, 0, 0, 0, 14112, 0] (Ch, Rk, BG, Ba, Ro, Co)
+    Req 14: W2_E42 Addr=3728736256 Size=29360128 B Target=OFFCHIP_DRAM
+    W2 Coordinates: [0, 0, 0, 0, 14224, 0] (Ch, Rk, BG, Ba, Ro, Co)
+    Req 15: W3_E42 Addr=3758096384 Size=29360128 B Target=OFFCHIP_DRAM
+    W3 Coordinates: [0, 0, 0, 0, 14336, 0] (Ch, Rk, BG, Ba, Ro, Co)
+  [Cache Bypass] ExecutionCache size unchanged (1). OFFCHIP_DRAM bypassed timing cache.
+  [Timing Analysis]
+    Simulated Start Time:      11702510.62 ns
+    Simulated Completion Time: 15603784.38 ns
+    Simulated Memory Duration: 3901273.75 ns
+    Ramulator Clock Delta:     3901273.75 ns
+    Per-Request Durations (Cumulative timestamps from batch start):
+      W1 completion latency: 1300638.12 ns
+      W2 completion latency: 2601011.25 ns
+      W3 completion latency: 3901273.75 ns
+  [LRU State] Expert 42 marked resident. Current resident bytes: 88080384 B (LRU entries: 1)
+  [Host Wall-Clock Runtime] Step 4: 11003.30 ms
+
+======================================================================
+Verification of ExecutionCache Bypass vs Reuse Invariants (Task 8)
+======================================================================
+Test 8.1: Consecutive identical OFFCHIP_DRAM batches...
+  First OFFCHIP call duration:  1300408.75 ns (DDR5 delta: 1300408.75 ns)
+  Second OFFCHIP call duration: 1300715.62 ns (DDR5 delta: 1300715.62 ns)
+  -> OFFCHIP_DRAM unconditionally invokes DDR5 Ramulator (ExecutionCache bypassed).
+Test 8.2: Consecutive identical HBM batches...
+  First HBM call duration:  11393.07 ns (HBM delta: 11393.07 ns)
+  Second HBM call duration: 11393.07 ns (HBM delta: 0.00 ns)
+  -> HBM correctly populates and reuses ExecutionCache (Ramulator skipped on hit).
+
+======================================================================
+SUCCESS: All DS-5C-7 timing, cache, and coordination checks PASSED!
+Total Host Wall-Clock Execution Time: 51.48 seconds
+Total Final Simulated DDR5 Clock:     18204908.75 ns
+Total Final Simulated HBM Clock:      44856.11 ns
+======================================================================

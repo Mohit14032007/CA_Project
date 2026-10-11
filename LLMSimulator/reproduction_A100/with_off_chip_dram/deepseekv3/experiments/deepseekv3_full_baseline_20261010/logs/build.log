@@ -1,0 +1,17 @@
+[  1%] Built target scheduler
+[  3%] Built target model
+[  2%] Built target ramulator-translation
+[ 18%] Built target module
+[ 20%] Built target ramulator-memorysystem
+[ 29%] Built target hardware
+[ 40%] Built target ramulator-controller
+[ 65%] Built target yaml-cpp
+[ 72%] Built target spdlog
+[ 77%] Built target ramulator-frontend
+[ 79%] Built target ramulator-addrmapper
+[ 83%] Built target ramulator-base
+[ 90%] Built target ramulator-dram
+[ 97%] Built target dram
+[ 97%] Built target llm_system
+[100%] Built target test_deepseekv3_full_baseline
+BUILD_EXIT=0

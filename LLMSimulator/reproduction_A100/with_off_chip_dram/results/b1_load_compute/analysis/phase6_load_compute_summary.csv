@@ -1,0 +1,7 @@
+number_of_expert_misses,62
+number_of_expert_hits,131
+mean_load_duration_ns,315283.4922279793
+median_load_duration_ns,0.0
+mean_compute_duration_ns,48536.86735751295
+median_compute_duration_ns,43390.7
+mean_load_to_compute_ratio,6.731567213328494

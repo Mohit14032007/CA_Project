@@ -1,0 +1,7 @@
+Test 1: Equal-size insertion, hit promotion, LRU eviction
+Test 2: Variable-size eviction (Testing bug fix)
+Test 3: Multiple evictions for one insertion
+Test 4: Entry larger than entire capacity
+Test 5: Duplicate insertion
+Test 6: 908 complete DeepSeek-V3 experts budget
+All LRU tests passed.

@@ -1,0 +1,43 @@
+======================================================================
+DS-6C-4 LAUNCH GATE & PREFLIGHT SPECIFICATION
+======================================================================
+Effective Configuration:
+  Path: configs/deepseekv3_b1_full_run_5step.yaml
+  SHA-256: 1bdcaee0f058c448a69f94e256998dc44da6acca5fdbd01b74db41b3a3954f6d
+  Model: DeepSeek-V3 (60 layers: 3 dense, 57 MoE)
+  Routed Experts: 256 per MoE layer, top-8 routing, 1 shared expert
+  Precision: FP16 (precision_byte: 2, 88,080,384 bytes/expert)
+  HBM Expert LRU Cache Budget: 80,000,000,000 bytes (74.51 GiB / 80 GB)
+  Off-Chip DDR5 Backing Store: 2,748,779,069,440 bytes (2.75 TB / 2.5 TiB across 10,485,760 rows)
+  Max Row Index Utilized: 4,902,912 (Row Utilization: 46.76% < 100%)
+  Serving Parameters: batch_size=1, input_len=2048, output_len=10, iter=5
+  Gantt Export: Disabled (export_gantt: false)
+
+Target Run Directory:
+  reproduction_A100/with_off_chip_dram/deepseekv3/experiments/deepseekv3_mixtral_style_20261011/full_run_5step_20261011/
+
+Harness Executable:
+  Path: build/run_deepseekv3_mixtral_style
+  SHA-256: 819a752527b536224b1467a297d72158281da5c7d5e54e7f792a0d521c4e1093
+  Git Commit: f75d362ae157f81ef2d3bd4055c9b22e34882a9f
+
+Launch Command:
+  WATCHDOG_TIMEOUT=25200 ./scripts/run_mixtral_style_experiment.sh configs/deepseekv3_b1_full_run_5step.yaml
+
+Runtime Estimation:
+  Baseline (DS-6C-3P1 Step 0): 4,685 seconds (~78.1 minutes)
+  Per-Step Expected:
+    Step 0: ~78.1 min (456 cold loads, 0 hits, 0 evicts, 40.16 GB resident)
+    Step 1: ~75.0 min (~440 cold loads, ~16 hits, 0 evicts, ~78.9 GB resident)
+    Step 2: ~74.0 min (~440 cold loads, ~16 hits, ~428 evicts, 80.0 GB resident)
+    Step 3: ~74.0 min (~440 cold loads, ~16 hits, ~440 evicts, 80.0 GB resident)
+    Step 4: ~74.0 min (~440 cold loads, ~16 hits, ~440 evicts, 80.0 GB resident)
+  Active Host Simulation Estimate: ~22,500 seconds (6.25 hours / 375 minutes)
+  Realistic Completion Range: 21,000 to 22,600 seconds (5.83 to 6.28 hours)
+  Expected Completion Time (UTC): ~15:45 UTC (range: 15:20 to 15:47 UTC)
+
+Watchdog & Headroom:
+  Dedicated Watchdog Timeout: 25,200 seconds (7.0 hours)
+  Safety Margin: 2,700 seconds (45.0 minutes >= 45 min requirement)
+  Launch Gate Result: PASS / AUTHORIZED FOR LAUNCH
+======================================================================

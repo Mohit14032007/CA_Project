@@ -1,0 +1,6 @@
+component,simulated_time_ms,pct_of_device_latency,accounting_semantic,notes
+Off-Chip DDR5 Weight Transfer,8601.93,98.719,Cycle-accurate Ramulator DDR5-3200 (exposed stalls),Synchronous critical path
+On-Chip Attention & Dense Execution,78.43,0.9,Simulated GPU & HBM execution (dense layers + MLA),3 dense layers + 57 MLA layers
+On-Chip MoE GEMM & Shared Expert,33.17,0.381,Simulated GPU execution (expert FFNs + shared expert),Zero-latency cache hit model
+Total Simulated Device Latency,8713.53,100.0,Sum of all simulated GPU & memory stages,End-to-end device time
+Analytical Peak Roofline FP16 Compute,0.6775,0.0078,Theoretical A100 dense peak (312 TFLOP/s),Reference compute lower bound

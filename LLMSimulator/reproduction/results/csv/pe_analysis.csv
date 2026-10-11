@@ -1,0 +1,2 @@
+Comparison,GPU_Total_Change,Logic_Total_Change,AttentionSum_Exec_Diff,Expert_Exec_Diff,Total_Time_Diff
+Duplex vs Duplex+PE,0.0,0.0,128,0,1.0

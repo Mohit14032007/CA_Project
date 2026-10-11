@@ -1,0 +1,50 @@
+model:
+  model_name: "deepseekV3"
+
+system:
+  num_node: 1
+  num_device: 1
+  processor_type: "GPU"
+  gpu_gen: "A100"
+  nvlink_gen: 3
+  infiniband_gen: 400
+
+  distribution:
+    expert_tensor_degree: 1
+    none_expert_tensor_degree: 1
+
+  optimization:
+    parallel_execution: false
+    hetero_subbatch: false
+    disagg_system: false
+    use_low_unit_moe_only: false
+    use_ramulator: true
+    use_flash_mla: false
+    use_flash_attention: false
+    reuse_kv_cache: false
+    kv_cache_reuse_rate: 0.0
+    prefill_mode: true
+    decode_mode: false
+    compressed_kv: false
+    use_absorb: false
+    offchip_dram_cfg_path: "reproduction_A100/with_off_chip_dram/configs/dram_config_DDR5.yaml"
+
+simulation:
+  data: "synthesis"
+  input_len: 128
+  output_len: 1
+  iter: 4
+  precision_byte: 2
+  skewness: 0.0
+  exit_out_of_memory: false
+  mem_cap_limit: false
+
+serving:
+  max_batch_size: 1
+  max_process_token: 128
+
+log:
+  output_directory: "reproduction_A100/with_off_chip_dram/deepseekv3/results/ds4_offchip_baseline"
+  gantt_directory: "reproduction_A100/with_off_chip_dram/deepseekv3/results/traces/ds4_offchip_baseline"
+  export_gantt: false
+  print_log: false

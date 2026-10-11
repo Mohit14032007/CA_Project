@@ -1,0 +1,9 @@
+[Prefill Mode] Output Length is modified into 1
+Using synthesis trace
+ACT: 0.0332184GB, Weight: 1228.65GB, Cache: 0.472412GB
+Total: 1229.15GB
+-----------------------------------
+-------------start-----------------
+-----------------------------------
+Total: 2557448443.103415
+reproduction_A100/with_off_chip_dram/deepseekv3/results/ds3_lru_debug/deepseekV3_synthesis_128_1_GPU_N1_D1_TP1_DP1_maxbatch1_maxprocess128_iter4_skew0_precision_byte2_parallel_execution0_prefill.csv

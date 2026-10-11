@@ -1,0 +1,7 @@
+subsystem,parameter_name,configured_value,reference_hardware_value,unit,architectural_assumption
+Compute Accelerator,device_architecture,Single GPU Reference,NVIDIA A100 SXM4 80GB,string,Single-device baseline without tensor parallelism
+Compute Engine,fp16_dense_peak_compute,312 TFLOP/s,312 TFLOP/s,TFLOP/s,Dense Tensor Core peak throughput without structured sparsity
+On-Chip Memory (HBM),cache_capacity_bytes,"80,000,000,000","80,000,000,000 (or 85,899,345,920)",bytes,Configured 80 GB software partition for expert caching
+On-Chip Memory (HBM),hbm_timing_model,"HBM3 (8 channels, 4 TB/s peak)",HBM2e (1.55 - 2.0 TB/s),config,Uses Ramulator HBM3 timing model (faster than physical A100 HBM2e)
+Off-Chip Memory (DDR5),ddr5_memory_type,"DDR5-3200 (2 channels, 51.2 GB/s theoretical)",Host System DRAM,config,Dual-channel DDR5 bus backing tier for offloaded expert storage
+Off-Chip Memory (DDR5),ramulator_simulation,Cycle-Accurate Ramulator2,Physical PCIe / CXL Link,simulator,Simulates cycle-level bank/channel contention and refresh timing

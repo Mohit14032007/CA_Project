@@ -1,0 +1,4 @@
+ablation,comparison,before,after,speedup,latency_change_percent,key_observation
+Duplex,A3 -> A4,69.79215223148701,27.660707242374,2.523151401008684,-60.36702357217927,Shifted attention to Logic-PIM
+PE,A4 -> A5,27.660707242374,27.660707242374,1.0,0.0,No measurable wall-clock latency improvement
+ET,A5 -> A6,27.660707242374,27.288411376557,1.013643002543447,-1.3459376239182763,ET=4 produced equal reported device-attributed workloads
